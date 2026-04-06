@@ -1,0 +1,8 @@
+{
+  "buildCommand": "npx ng build",
+  "outputDirectory": "dist/the-button/browser",
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
