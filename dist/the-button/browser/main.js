@@ -38226,26 +38226,14 @@ function provideRouterInitializer() {
 // node_modules/@angular/router/fesm2022/router.mjs
 var VERSION4 = new Version("19.2.20");
 
-// src/app/app.routes.ts
-var routes = [];
-
-// src/app/app.config.ts
-var appConfig = {
-  providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
-    provideHttpClient()
-  ]
-};
-
 // src/environments/environment.ts
 var environment = {
   production: false,
   supabase: {
     // ─── STEP 1: Replace these with your Supabase project credentials ───
     // Get them from: https://supabase.com/dashboard → your project → Settings → API
-    url: "YOUR_SUPABASE_URL",
-    anonKey: "YOUR_SUPABASE_ANON_KEY"
+    url: "https://bxsrcjyguitmkrkqtxdn.supabase.co",
+    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4c3JjanlndWl0bWtya3F0eGRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MDM4NDksImV4cCI6MjA5MTA3OTg0OX0.6aV7tNbXERY8aZvicGjZJgnyI4Aj-sh4od1bqvwn0Ik"
   }
 };
 
@@ -38344,26 +38332,26 @@ var CounterService = class _CounterService {
   }], () => [], null);
 })();
 
-// src/app/app.component.ts
+// src/app/pages/home/home.component.ts
 var _c0 = ["btnEl"];
 var _c1 = ["pageEl"];
-function AppComponent_span_14_Template(rf, ctx) {
+function HomeComponent_span_14_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 46);
-    \u0275\u0275element(1, "span", 47)(2, "span", 48);
+    \u0275\u0275elementStart(0, "span", 47);
+    \u0275\u0275element(1, "span", 48)(2, "span", 49);
     \u0275\u0275elementEnd();
   }
 }
-function AppComponent_div_26_Template(rf, ctx) {
+function HomeComponent_div_26_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 49);
+    \u0275\u0275elementStart(0, "div", 50);
     \u0275\u0275text(1, " \xB7\xB7\xB7 ");
     \u0275\u0275elementEnd();
   }
 }
-function AppComponent_ng_template_27_span_1_Template(rf, ctx) {
+function HomeComponent_ng_template_27_span_1_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 52);
+    \u0275\u0275elementStart(0, "span", 53);
     \u0275\u0275text(1);
     \u0275\u0275elementEnd();
   }
@@ -38376,10 +38364,10 @@ function AppComponent_ng_template_27_span_1_Template(rf, ctx) {
     \u0275\u0275textInterpolate(d_r2);
   }
 }
-function AppComponent_ng_template_27_Template(rf, ctx) {
+function HomeComponent_ng_template_27_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 50);
-    \u0275\u0275template(1, AppComponent_ng_template_27_span_1_Template, 2, 5, "span", 51);
+    \u0275\u0275elementStart(0, "div", 51);
+    \u0275\u0275template(1, HomeComponent_ng_template_27_span_1_Template, 2, 5, "span", 52);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
@@ -38389,75 +38377,74 @@ function AppComponent_ng_template_27_Template(rf, ctx) {
     \u0275\u0275property("ngForOf", ctx_r2.digits())("ngForTrackBy", ctx_r2.trackDigit);
   }
 }
-function AppComponent_span_32_Template(rf, ctx) {
+function HomeComponent_span_32_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 53);
+    \u0275\u0275elementStart(0, "span", 54);
     \u0275\u0275text(1, "\xB7");
     \u0275\u0275elementEnd();
   }
 }
-function AppComponent_span_33_Template(rf, ctx) {
+function HomeComponent_span_33_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 54);
+    \u0275\u0275elementStart(0, "span", 55);
     \u0275\u0275text(1, "God");
     \u0275\u0275elementEnd();
   }
 }
-function AppComponent_span_34_Template(rf, ctx) {
+function HomeComponent_span_34_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 55);
+    \u0275\u0275elementStart(0, "span", 56);
     \u0275\u0275text(1, "Legend");
     \u0275\u0275elementEnd();
   }
 }
-function AppComponent_span_35_Template(rf, ctx) {
+function HomeComponent_span_35_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 56);
+    \u0275\u0275elementStart(0, "span", 57);
     \u0275\u0275text(1, "Addict");
     \u0275\u0275elementEnd();
   }
 }
-function AppComponent_span_36_Template(rf, ctx) {
+function HomeComponent_span_36_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 57);
+    \u0275\u0275elementStart(0, "span", 58);
     \u0275\u0275text(1, "Presser");
     \u0275\u0275elementEnd();
   }
 }
-function AppComponent_span_37_Template(rf, ctx) {
+function HomeComponent_span_37_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 58);
+    \u0275\u0275elementStart(0, "span", 59);
     \u0275\u0275text(1, "Peasant");
     \u0275\u0275elementEnd();
   }
 }
-function AppComponent_div_41_Template(rf, ctx) {
+function HomeComponent_div_41_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 59);
-    \u0275\u0275element(1, "div", 60);
+    \u0275\u0275elementStart(0, "div", 60);
+    \u0275\u0275element(1, "div", 61);
     \u0275\u0275elementEnd();
   }
 }
-function AppComponent_div_42_Template(rf, ctx) {
+function HomeComponent_div_42_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275element(0, "div", 61);
+    \u0275\u0275element(0, "div", 62);
   }
   if (rf & 2) {
     const p_r4 = ctx.$implicit;
     \u0275\u0275styleProp("--bx", p_r4.x)("--by", p_r4.y)("background", p_r4.color);
   }
 }
-function AppComponent_div_54_Template(rf, ctx) {
+function HomeComponent_div_54_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 62);
+    \u0275\u0275elementStart(0, "div", 63);
     \u0275\u0275text(1, " Copied to clipboard ");
     \u0275\u0275elementEnd();
   }
 }
-var AppComponent = class _AppComponent {
+var HomeComponent = class _HomeComponent {
   platformId = inject(PLATFORM_ID);
   counter = inject(CounterService);
-  // ─── State ───
   isPressed = signal(false);
   isShaking = signal(false);
   isFlashing = signal(false);
@@ -38465,17 +38452,12 @@ var AppComponent = class _AppComponent {
   burstParticles = signal([]);
   justPressed = signal(false);
   showShareToast = signal(false);
-  // ─── Cursor ───
   cursorX = signal(0);
   cursorY = signal(0);
   cursorRingX = signal(0);
   cursorRingY = signal(0);
-  // ─── Counter digit animation state ───
   prevCount = signal(0);
-  digits = computed(() => {
-    const s = this.counter.formattedCount();
-    return s.split("");
-  });
+  digits = computed(() => this.counter.formattedCount().split(""));
   btnEl;
   pageEl;
   currentYear = (/* @__PURE__ */ new Date()).getFullYear();
@@ -38540,19 +38522,17 @@ var AppComponent = class _AppComponent {
       setTimeout(() => this.justPressed.set(false), 1200);
     });
   }
-  spawnBurst(event) {
+  spawnBurst(_event) {
     const colors = ["#ff2200", "#ff4400", "#ff6600", "#ffaa00", "#ffffff"];
     const count = 12;
     const particles = [];
     for (let i = 0; i < count; i++) {
       const angle = i / count * Math.PI * 2;
       const dist = 50 + Math.random() * 60;
-      const bx = Math.cos(angle) * dist;
-      const by = Math.sin(angle) * dist;
       particles.push({
         id: ++this.particleId,
-        x: `${bx}px`,
-        y: `${by}px`,
+        x: `${Math.cos(angle) * dist}px`,
+        y: `${Math.sin(angle) * dist}px`,
         color: colors[Math.floor(Math.random() * colors.length)]
       });
     }
@@ -38582,10 +38562,10 @@ var AppComponent = class _AppComponent {
   trackDigit(i, d) {
     return `${i}-${d}`;
   }
-  static \u0275fac = function AppComponent_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _AppComponent)();
+  static \u0275fac = function HomeComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _HomeComponent)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["app-root"]], viewQuery: function AppComponent_Query(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _HomeComponent, selectors: [["app-home"]], viewQuery: function HomeComponent_Query(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275viewQuery(_c0, 5);
       \u0275\u0275viewQuery(_c1, 5);
@@ -38595,7 +38575,7 @@ var AppComponent = class _AppComponent {
       \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx.btnEl = _t.first);
       \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx.pageEl = _t.first);
     }
-  }, decls: 58, vars: 35, consts: [["pageEl", ""], ["countDisplay", ""], ["btnEl", ""], [1, "cursor"], [1, "cursor-ring"], [1, "noise"], [1, "scanlines"], [1, "vignette"], [1, "flash-overlay"], [1, "relative", "z-10", "min-h-screen", "flex", "flex-col", "items-center", "justify-center", "select-none"], [1, "absolute", "inset-0", "flex", "items-center", "justify-center", "pointer-events-none"], [1, "w-[600px]", "h-[600px]", "rounded-full", 2, "background", "radial-gradient(circle, rgba(180,10,0,0.08) 0%, transparent 70%)", "filter", "blur(40px)"], [1, "absolute", "top-0", "left-0", "right-0", "flex", "items-center", "justify-between", "px-8", "pt-8"], [1, "font-display", "text-white/20", "tracking-[0.3em]", "text-xs", "uppercase"], [1, "flex", "items-center", "gap-2"], ["class", "relative flex h-2 w-2", 4, "ngIf"], [1, "font-body", "text-xs", "tracking-widest", "uppercase"], [1, "text-center", "mb-16", "relative"], [1, "font-display", "text-white/10", "tracking-[0.5em]", "text-sm", "uppercase", "mb-3", 2, "letter-spacing", "0.6em"], [1, "font-body", "text-white/20", "text-xs", "tracking-widest", "uppercase"], [1, "text-center", "mb-14", "relative"], [1, "font-body", "text-white/20", "text-xs", "tracking-[0.4em]", "uppercase", "mb-4"], [1, "relative"], ["class", "font-mono text-7xl font-bold text-white/20 tracking-tight", "style", "font-variant-numeric: tabular-nums;", 4, "ngIf", "ngIfElse"], [1, "absolute", "-bottom-4", "left-1/2", "-translate-x-1/2", "w-48", "h-1", "rounded-full", 2, "background", "linear-gradient(90deg, transparent, rgba(255,30,0,0.3), transparent)"], [1, "mt-6", "font-mono", "text-xs", "tracking-widest"], ["class", "ml-2 opacity-60", 4, "ngIf"], ["class", "ml-2 text-yellow-400/80", 4, "ngIf"], ["class", "ml-2 text-orange-400/80", 4, "ngIf"], ["class", "ml-2 text-red-400/80", 4, "ngIf"], ["class", "ml-2 text-white/50", 4, "ngIf"], ["class", "ml-2 text-white/30", 4, "ngIf"], [1, "relative", "flex", "items-center", "justify-center", "mb-14"], [1, "absolute", "rounded-full", "pointer-events-none", 2, "width", "320px", "height", "320px", "border", "1px solid rgba(200,17,0,0.08)", "animation", "glowBreathe 3s ease-in-out infinite"], [1, "absolute", "rounded-full", "pointer-events-none", 2, "width", "260px", "height", "260px", "border", "1px solid rgba(200,17,0,0.15)", "animation", "glowBreathe 3s ease-in-out infinite", "animation-delay", "0.5s"], ["class", "ripple-container absolute", "style", "width: 180px; height: 180px; top: 50%; left: 50%; transform: translate(-50%,-50%);", 4, "ngIf"], ["class", "burst-particle absolute top-1/2 left-1/2", "style", "margin: -2px 0 0 -2px;", 3, "--bx", "--by", "background", 4, "ngFor", "ngForOf", "ngForTrackBy"], ["aria-label", "Press the button", 1, "relative", "rounded-full", "outline-none", "focus:outline-none", "border-0", 2, "width", "180px", "height", "180px", "cursor", "none", "background", "radial-gradient(circle at 38% 35%, #ff3300 0%, #cc1100 45%, #880800 100%)", "box-shadow", "0 0 50px 15px rgba(204,17,0,0.35),\n          0 0 100px 30px rgba(204,17,0,0.12),\n          inset 0 -6px 24px rgba(0,0,0,0.5),\n          inset 0 6px 12px rgba(255,80,40,0.25)", "animation", "glowBreathe 3s ease-in-out infinite", "transition", "box-shadow 0.1s", 3, "click"], [1, "absolute", "rounded-full", "pointer-events-none", 2, "top", "12%", "left", "16%", "width", "40%", "height", "30%", "background", "radial-gradient(ellipse, rgba(255,140,100,0.35) 0%, transparent 80%)", "filter", "blur(4px)"], [1, "relative", "font-display", "text-white/90", "tracking-widest", "pointer-events-none", 2, "font-size", "1rem", "letter-spacing", "0.25em", "text-shadow", "0 1px 4px rgba(0,0,0,0.5)"], [1, "text-center", "mb-10"], [1, "font-body", "text-white/20", "text-xs", "tracking-[0.3em]", "uppercase"], ["onmouseover", "this.style.borderColor='rgba(255,34,0,0.4)'; this.style.color='rgba(255,100,60,0.8)'; this.style.background='rgba(204,17,0,0.08)';", "onmouseout", "this.style.borderColor='rgba(255,255,255,0.1)'; this.style.color='rgba(255,255,255,0.3)'; this.style.background='rgba(255,255,255,0.03)';", 1, "group", "font-body", "text-xs", "tracking-widest", "uppercase", "px-8", "py-3", "rounded-full", "transition-all", "duration-300", 2, "cursor", "none", "border", "1px solid rgba(255,255,255,0.1)", "color", "rgba(255,255,255,0.3)", "background", "rgba(255,255,255,0.03)", 3, "click"], ["class", "absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-xs px-4 py-2 rounded-full", "style", "\n           background: rgba(204,17,0,0.15);\n           border: 1px solid rgba(204,17,0,0.3);\n           color: rgba(255,100,60,0.9);\n         ", 4, "ngIf"], [1, "absolute", "bottom-0", "left-0", "right-0", "pb-6", "flex", "items-center", "justify-center", "gap-6"], [1, "font-body", "text-white/15", "text-xs", "tracking-widest"], [1, "relative", "flex", "h-2", "w-2"], [1, "animate-ping", "absolute", "inline-flex", "h-full", "w-full", "rounded-full", "bg-red-500", "opacity-75"], [1, "relative", "inline-flex", "rounded-full", "h-2", "w-2", "bg-red-600"], [1, "font-mono", "text-7xl", "font-bold", "text-white/20", "tracking-tight", 2, "font-variant-numeric", "tabular-nums"], [1, "font-mono", "text-7xl", "font-bold", "tracking-tight", 2, "font-variant-numeric", "tabular-nums", "line-height", "1"], ["class", "digit-flip", 3, "animating", "color", 4, "ngFor", "ngForOf", "ngForTrackBy"], [1, "digit-flip"], [1, "ml-2", "opacity-60"], [1, "ml-2", "text-yellow-400/80"], [1, "ml-2", "text-orange-400/80"], [1, "ml-2", "text-red-400/80"], [1, "ml-2", "text-white/50"], [1, "ml-2", "text-white/30"], [1, "ripple-container", "absolute", 2, "width", "180px", "height", "180px", "top", "50%", "left", "50%", "transform", "translate(-50%,-50%)"], [1, "ripple"], [1, "burst-particle", "absolute", "top-1/2", "left-1/2", 2, "margin", "-2px 0 0 -2px"], [1, "absolute", "-top-12", "left-1/2", "-translate-x-1/2", "whitespace-nowrap", "font-mono", "text-xs", "px-4", "py-2", "rounded-full", 2, "background", "rgba(204,17,0,0.15)", "border", "1px solid rgba(204,17,0,0.3)", "color", "rgba(255,100,60,0.9)"]], template: function AppComponent_Template(rf, ctx) {
+  }, decls: 60, vars: 35, consts: [["pageEl", ""], ["countDisplay", ""], ["btnEl", ""], [1, "cursor"], [1, "cursor-ring"], [1, "noise"], [1, "scanlines"], [1, "vignette"], [1, "flash-overlay"], [1, "relative", "z-10", "min-h-screen", "flex", "flex-col", "items-center", "justify-center", "select-none"], [1, "absolute", "inset-0", "flex", "items-center", "justify-center", "pointer-events-none"], [1, "w-[600px]", "h-[600px]", "rounded-full", 2, "background", "radial-gradient(circle, rgba(180,10,0,0.08) 0%, transparent 70%)", "filter", "blur(40px)"], [1, "absolute", "top-0", "left-0", "right-0", "flex", "items-center", "justify-between", "px-8", "pt-8"], [1, "font-display", "text-white/20", "tracking-[0.3em]", "text-xs", "uppercase"], [1, "flex", "items-center", "gap-2"], ["class", "relative flex h-2 w-2", 4, "ngIf"], [1, "font-body", "text-xs", "tracking-widest", "uppercase"], [1, "text-center", "mb-16", "relative"], [1, "font-display", "text-white/10", "tracking-[0.5em]", "text-sm", "uppercase", "mb-3", 2, "letter-spacing", "0.6em"], [1, "font-body", "text-white/20", "text-xs", "tracking-widest", "uppercase"], [1, "text-center", "mb-14", "relative"], [1, "font-body", "text-white/20", "text-xs", "tracking-[0.4em]", "uppercase", "mb-4"], [1, "relative"], ["class", "font-mono text-7xl font-bold text-white/20 tracking-tight", "style", "font-variant-numeric: tabular-nums;", 4, "ngIf", "ngIfElse"], [1, "absolute", "-bottom-4", "left-1/2", "-translate-x-1/2", "w-48", "h-1", "rounded-full", 2, "background", "linear-gradient(90deg, transparent, rgba(255,30,0,0.3), transparent)"], [1, "mt-6", "font-mono", "text-xs", "tracking-widest"], ["class", "ml-2 opacity-60", 4, "ngIf"], ["class", "ml-2 text-yellow-400/80", 4, "ngIf"], ["class", "ml-2 text-orange-400/80", 4, "ngIf"], ["class", "ml-2 text-red-400/80", 4, "ngIf"], ["class", "ml-2 text-white/50", 4, "ngIf"], ["class", "ml-2 text-white/30", 4, "ngIf"], [1, "relative", "flex", "items-center", "justify-center", "mb-14"], [1, "absolute", "rounded-full", "pointer-events-none", 2, "width", "320px", "height", "320px", "border", "1px solid rgba(200,17,0,0.08)", "animation", "glowBreathe 3s ease-in-out infinite"], [1, "absolute", "rounded-full", "pointer-events-none", 2, "width", "260px", "height", "260px", "border", "1px solid rgba(200,17,0,0.15)", "animation", "glowBreathe 3s ease-in-out infinite", "animation-delay", "0.5s"], ["class", "ripple-container absolute", "style", "width: 180px; height: 180px; top: 50%; left: 50%; transform: translate(-50%,-50%);", 4, "ngIf"], ["class", "burst-particle absolute top-1/2 left-1/2", "style", "margin: -2px 0 0 -2px;", 3, "--bx", "--by", "background", 4, "ngFor", "ngForOf", "ngForTrackBy"], ["aria-label", "Press the button", 1, "relative", "rounded-full", "outline-none", "focus:outline-none", "border-0", 2, "width", "180px", "height", "180px", "cursor", "none", "background", "radial-gradient(circle at 38% 35%, #ff3300 0%, #cc1100 45%, #880800 100%)", "box-shadow", "0 0 50px 15px rgba(204,17,0,0.35),\n          0 0 100px 30px rgba(204,17,0,0.12),\n          inset 0 -6px 24px rgba(0,0,0,0.5),\n          inset 0 6px 12px rgba(255,80,40,0.25)", "animation", "glowBreathe 3s ease-in-out infinite", "transition", "box-shadow 0.1s", 3, "click"], [1, "absolute", "rounded-full", "pointer-events-none", 2, "top", "12%", "left", "16%", "width", "40%", "height", "30%", "background", "radial-gradient(ellipse, rgba(255,140,100,0.35) 0%, transparent 80%)", "filter", "blur(4px)"], [1, "relative", "font-display", "text-white/90", "tracking-widest", "pointer-events-none", 2, "font-size", "1rem", "letter-spacing", "0.25em", "text-shadow", "0 1px 4px rgba(0,0,0,0.5)"], [1, "text-center", "mb-10"], [1, "font-body", "text-white/20", "text-xs", "tracking-[0.3em]", "uppercase"], ["onmouseover", "this.style.borderColor='rgba(255,34,0,0.4)'; this.style.color='rgba(255,100,60,0.8)'; this.style.background='rgba(204,17,0,0.08)';", "onmouseout", "this.style.borderColor='rgba(255,255,255,0.1)'; this.style.color='rgba(255,255,255,0.3)'; this.style.background='rgba(255,255,255,0.03)';", 1, "group", "font-body", "text-xs", "tracking-widest", "uppercase", "px-8", "py-3", "rounded-full", "transition-all", "duration-300", 2, "cursor", "none", "border", "1px solid rgba(255,255,255,0.1)", "color", "rgba(255,255,255,0.3)", "background", "rgba(255,255,255,0.03)", 3, "click"], ["class", "absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-xs px-4 py-2 rounded-full", "style", "\n           background: rgba(204,17,0,0.15);\n           border: 1px solid rgba(204,17,0,0.3);\n           color: rgba(255,100,60,0.9);\n         ", 4, "ngIf"], [1, "absolute", "bottom-0", "left-0", "right-0", "pb-6", "flex", "items-center", "justify-center", "gap-6"], [1, "font-body", "text-white/15", "text-xs", "tracking-widest"], ["routerLink", "/terms-and-conditions", "onmouseover", "this.style.color='rgba(255,255,255,0.4)'", "onmouseout", "this.style.color='rgba(255,255,255,0.12)'", 1, "font-body", "text-xs", "tracking-widest", "transition-colors", "duration-200", 2, "color", "rgba(255,255,255,0.12)"], [1, "relative", "flex", "h-2", "w-2"], [1, "animate-ping", "absolute", "inline-flex", "h-full", "w-full", "rounded-full", "bg-red-500", "opacity-75"], [1, "relative", "inline-flex", "rounded-full", "h-2", "w-2", "bg-red-600"], [1, "font-mono", "text-7xl", "font-bold", "text-white/20", "tracking-tight", 2, "font-variant-numeric", "tabular-nums"], [1, "font-mono", "text-7xl", "font-bold", "tracking-tight", 2, "font-variant-numeric", "tabular-nums", "line-height", "1"], ["class", "digit-flip", 3, "animating", "color", 4, "ngFor", "ngForOf", "ngForTrackBy"], [1, "digit-flip"], [1, "ml-2", "opacity-60"], [1, "ml-2", "text-yellow-400/80"], [1, "ml-2", "text-orange-400/80"], [1, "ml-2", "text-red-400/80"], [1, "ml-2", "text-white/50"], [1, "ml-2", "text-white/30"], [1, "ripple-container", "absolute", 2, "width", "180px", "height", "180px", "top", "50%", "left", "50%", "transform", "translate(-50%,-50%)"], [1, "ripple"], [1, "burst-particle", "absolute", "top-1/2", "left-1/2", 2, "margin", "-2px 0 0 -2px"], [1, "absolute", "-top-12", "left-1/2", "-translate-x-1/2", "whitespace-nowrap", "font-mono", "text-xs", "px-4", "py-2", "rounded-full", 2, "background", "rgba(204,17,0,0.15)", "border", "1px solid rgba(204,17,0,0.3)", "color", "rgba(255,100,60,0.9)"]], template: function HomeComponent_Template(rf, ctx) {
     if (rf & 1) {
       const _r1 = \u0275\u0275getCurrentView();
       \u0275\u0275element(0, "div", 3)(1, "div", 4)(2, "div", 5)(3, "div", 6)(4, "div", 7)(5, "div", 8);
@@ -38606,7 +38586,7 @@ var AppComponent = class _AppComponent {
       \u0275\u0275text(12);
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(13, "div", 14);
-      \u0275\u0275template(14, AppComponent_span_14_Template, 3, 0, "span", 15);
+      \u0275\u0275template(14, HomeComponent_span_14_Template, 3, 0, "span", 15);
       \u0275\u0275elementStart(15, "span", 16);
       \u0275\u0275text(16);
       \u0275\u0275elementEnd()()();
@@ -38620,18 +38600,18 @@ var AppComponent = class _AppComponent {
       \u0275\u0275text(24, " Times Pressed ");
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(25, "div", 22);
-      \u0275\u0275template(26, AppComponent_div_26_Template, 2, 0, "div", 23)(27, AppComponent_ng_template_27_Template, 2, 4, "ng-template", null, 1, \u0275\u0275templateRefExtractor);
+      \u0275\u0275template(26, HomeComponent_div_26_Template, 2, 0, "div", 23)(27, HomeComponent_ng_template_27_Template, 2, 4, "ng-template", null, 1, \u0275\u0275templateRefExtractor);
       \u0275\u0275element(29, "div", 24);
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(30, "div", 25);
       \u0275\u0275text(31);
-      \u0275\u0275template(32, AppComponent_span_32_Template, 2, 0, "span", 26)(33, AppComponent_span_33_Template, 2, 0, "span", 27)(34, AppComponent_span_34_Template, 2, 0, "span", 28)(35, AppComponent_span_35_Template, 2, 0, "span", 29)(36, AppComponent_span_36_Template, 2, 0, "span", 30)(37, AppComponent_span_37_Template, 2, 0, "span", 31);
+      \u0275\u0275template(32, HomeComponent_span_32_Template, 2, 0, "span", 26)(33, HomeComponent_span_33_Template, 2, 0, "span", 27)(34, HomeComponent_span_34_Template, 2, 0, "span", 28)(35, HomeComponent_span_35_Template, 2, 0, "span", 29)(36, HomeComponent_span_36_Template, 2, 0, "span", 30)(37, HomeComponent_span_37_Template, 2, 0, "span", 31);
       \u0275\u0275elementEnd()();
       \u0275\u0275elementStart(38, "div", 32);
       \u0275\u0275element(39, "div", 33)(40, "div", 34);
-      \u0275\u0275template(41, AppComponent_div_41_Template, 2, 0, "div", 35)(42, AppComponent_div_42_Template, 1, 6, "div", 36);
+      \u0275\u0275template(41, HomeComponent_div_41_Template, 2, 0, "div", 35)(42, HomeComponent_div_42_Template, 1, 6, "div", 36);
       \u0275\u0275elementStart(43, "button", 37, 2);
-      \u0275\u0275listener("click", function AppComponent_Template_button_click_43_listener($event) {
+      \u0275\u0275listener("click", function HomeComponent_Template_button_click_43_listener($event) {
         \u0275\u0275restoreView(_r1);
         return \u0275\u0275resetView(ctx.onPress($event));
       });
@@ -38643,16 +38623,19 @@ var AppComponent = class _AppComponent {
       \u0275\u0275text(50, " No reason needed. ");
       \u0275\u0275elementEnd()();
       \u0275\u0275elementStart(51, "div", 22)(52, "button", 42);
-      \u0275\u0275listener("click", function AppComponent_Template_button_click_52_listener() {
+      \u0275\u0275listener("click", function HomeComponent_Template_button_click_52_listener() {
         \u0275\u0275restoreView(_r1);
         return \u0275\u0275resetView(ctx.share());
       });
       \u0275\u0275text(53, " Share the madness ");
       \u0275\u0275elementEnd();
-      \u0275\u0275template(54, AppComponent_div_54_Template, 2, 0, "div", 43);
+      \u0275\u0275template(54, HomeComponent_div_54_Template, 2, 0, "div", 43);
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(55, "footer", 44)(56, "span", 45);
       \u0275\u0275text(57, " Built by Nizar \xB7 Beirut \u{1F1F1}\u{1F1E7} ");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(58, "a", 46);
+      \u0275\u0275text(59, " Terms ");
       \u0275\u0275elementEnd()()();
     }
     if (rf & 2) {
@@ -38699,12 +38682,12 @@ var AppComponent = class _AppComponent {
       \u0275\u0275advance(11);
       \u0275\u0275property("ngIf", ctx.showShareToast());
     }
-  }, dependencies: [CommonModule, NgForOf, NgIf], encapsulation: 2, changeDetection: 0 });
+  }, dependencies: [CommonModule, NgForOf, NgIf, RouterLink], encapsulation: 2, changeDetection: 0 });
 };
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(AppComponent, [{
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(HomeComponent, [{
     type: Component,
-    args: [{ selector: "app-root", standalone: true, imports: [CommonModule], changeDetection: ChangeDetectionStrategy.OnPush, template: `<!-- \u2500\u2500 Custom cursor \u2500\u2500 -->
+    args: [{ selector: "app-home", standalone: true, imports: [CommonModule, RouterLink], changeDetection: ChangeDetectionStrategy.OnPush, template: `<!-- \u2500\u2500 Custom cursor \u2500\u2500 -->
 <div class="cursor" [style.left.px]="cursorX()" [style.top.px]="cursorY()"></div>
 <div class="cursor-ring" [style.left.px]="cursorRingX()" [style.top.px]="cursorRingY()"></div>
 
@@ -38902,6 +38885,13 @@ var AppComponent = class _AppComponent {
     <span class="font-body text-white/15 text-xs tracking-widest">
       Built by Nizar \xB7 Beirut \u{1F1F1}\u{1F1E7}
     </span>
+    <a routerLink="/terms-and-conditions"
+       class="font-body text-xs tracking-widest transition-colors duration-200"
+       style="color: rgba(255,255,255,0.12);"
+       onmouseover="this.style.color='rgba(255,255,255,0.4)'"
+       onmouseout="this.style.color='rgba(255,255,255,0.12)'">
+      Terms
+    </a>
   </footer>
 
 </div>
@@ -38915,7 +38905,305 @@ var AppComponent = class _AppComponent {
   }] });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.component.ts", lineNumber: 23 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(HomeComponent, { className: "HomeComponent", filePath: "src/app/pages/home/home.component.ts", lineNumber: 24 });
+})();
+
+// src/app/pages/terms/terms.component.ts
+var TermsComponent = class _TermsComponent {
+  updated = "April 6, 2026";
+  static \u0275fac = function TermsComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _TermsComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TermsComponent, selectors: [["app-terms"]], decls: 95, vars: 1, consts: [[1, "min-h-screen", "bg-[#050505]", "text-white", "font-body"], [1, "noise"], [1, "vignette"], [1, "relative", "z-10", "max-w-2xl", "mx-auto", "px-6", "py-16"], ["routerLink", "/", "onmouseover", "this.style.color='rgba(255,60,30,0.8)'", "onmouseout", "this.style.color='rgba(255,255,255,0.25)'", 1, "inline-flex", "items-center", "gap-2", "text-xs", "tracking-widest", "uppercase", "mb-12", "transition-colors", "duration-200", 2, "color", "rgba(255,255,255,0.25)"], [1, "mb-12"], [1, "font-display", "text-5xl", "tracking-widest", "mb-3", 2, "color", "white"], [1, "text-xs", "tracking-widest", "uppercase", 2, "color", "rgba(255,255,255,0.25)"], [1, "mb-10", "h-px", 2, "background", "linear-gradient(90deg, rgba(204,17,0,0.4), transparent)"], [1, "space-y-10", "text-sm", "leading-relaxed", 2, "color", "rgba(255,255,255,0.65)"], [1, "font-display", "text-xl", "tracking-widest", "mb-3", 2, "color", "white"], [1, "mb-3"], [2, "color", "rgba(255,255,255,0.85)"], [1, "list-none", "space-y-2", "pl-4"], [2, "border-left", "2px solid rgba(204,17,0,0.4)", "padding-left", "1rem"], [1, "mt-3"], [1, "mt-2", "font-mono", "text-xs", "px-4", "py-3", "rounded", 2, "background", "rgba(255,255,255,0.04)", "border", "1px solid rgba(255,255,255,0.08)", "color", "rgba(255,60,30,0.8)"], [1, "mt-12", "h-px", 2, "background", "linear-gradient(90deg, rgba(204,17,0,0.4), transparent)"], [1, "mt-8", "flex", "items-center", "justify-between"], ["routerLink", "/", "onmouseover", "this.style.color='rgba(255,60,30,1)'", "onmouseout", "this.style.color='rgba(255,60,30,0.6)'", 1, "font-display", "text-sm", "tracking-widest", "transition-colors", "duration-200", 2, "color", "rgba(255,60,30,0.6)"], [1, "font-mono", "text-xs", 2, "color", "rgba(255,255,255,0.15)"]], template: function TermsComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "div", 0);
+      \u0275\u0275element(1, "div", 1)(2, "div", 2);
+      \u0275\u0275elementStart(3, "div", 3)(4, "a", 4);
+      \u0275\u0275text(5, " \u2190 Back to The Button ");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(6, "div", 5)(7, "h1", 6);
+      \u0275\u0275text(8, " TERMS OF SERVICE ");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(9, "p", 7);
+      \u0275\u0275text(10);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275element(11, "div", 8);
+      \u0275\u0275elementStart(12, "div", 9)(13, "section")(14, "h2", 10);
+      \u0275\u0275text(15, "1. ACCEPTANCE OF TERMS");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(16, "p");
+      \u0275\u0275text(17, 'By accessing or using The Button ("the Service") at thebutton.app or any associated domain, you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.');
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(18, "section")(19, "h2", 10);
+      \u0275\u0275text(20, "2. DESCRIPTION OF SERVICE");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(21, "p");
+      \u0275\u0275text(22, "The Button is a web-based interactive experience that allows users to press a virtual button that increments a shared global counter. The Service may include optional paid features such as additional daily presses, cosmetic upgrades, user titles, and statistical features. The core button-pressing experience is available for free.");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(23, "section")(24, "h2", 10);
+      \u0275\u0275text(25, "3. USER ACCOUNTS");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(26, "p");
+      \u0275\u0275text(27, "Certain features may require you to create an account. You are responsible for maintaining the confidentiality of your credentials and for all activity under your account. You must provide accurate information and keep it up to date. We reserve the right to suspend or terminate accounts that violate these Terms.");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(28, "section")(29, "h2", 10);
+      \u0275\u0275text(30, "4. PURCHASES AND PAYMENTS");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(31, "p", 11);
+      \u0275\u0275text(32, "Paid features are offered as one-time purchases or recurring subscriptions. All payments are processed securely by Paddle.com, our Merchant of Record. Paddle handles billing, invoicing, and applicable taxes on our behalf.");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(33, "p", 11)(34, "strong", 12);
+      \u0275\u0275text(35, "Subscriptions");
+      \u0275\u0275elementEnd();
+      \u0275\u0275text(36, " \u2014 Recurring subscriptions are billed on a monthly basis. You may cancel at any time from your account settings. Cancellation takes effect at the end of the current billing period.");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(37, "p")(38, "strong", 12);
+      \u0275\u0275text(39, "Refunds");
+      \u0275\u0275elementEnd();
+      \u0275\u0275text(40, " \u2014 All sales are final. We do not offer refunds for one-time purchases or partial refunds for unused subscription periods, except where required by applicable law. If you believe you were charged in error, contact us at the email below.");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(41, "section")(42, "h2", 10);
+      \u0275\u0275text(43, "5. ACCEPTABLE USE");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(44, "p", 11);
+      \u0275\u0275text(45, "You agree not to:");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(46, "ul", 13)(47, "li", 14);
+      \u0275\u0275text(48, "Use bots, scripts, or automated tools to simulate presses or manipulate counters");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(49, "li", 14);
+      \u0275\u0275text(50, "Attempt to exploit, hack, or reverse-engineer any part of the Service");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(51, "li", 14);
+      \u0275\u0275text(52, "Interfere with the Service's availability or performance");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(53, "li", 14);
+      \u0275\u0275text(54, "Use the Service for any unlawful purpose");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(55, "p", 15);
+      \u0275\u0275text(56, "We reserve the right to reset counts, ban accounts, or revoke purchased features from users who violate these rules, without refund.");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(57, "section")(58, "h2", 10);
+      \u0275\u0275text(59, "6. INTELLECTUAL PROPERTY");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(60, "p");
+      \u0275\u0275text(61, "All content, design, and code comprising the Service is owned by or licensed to The Button and its creator. You may not copy, reproduce, or distribute any part of the Service without prior written permission.");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(62, "section")(63, "h2", 10);
+      \u0275\u0275text(64, "7. DISCLAIMER OF WARRANTIES");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(65, "p");
+      \u0275\u0275text(66, 'The Service is provided "as is" and "as available" without warranties of any kind, express or implied. We do not guarantee that the Service will be uninterrupted, error-free, or that the counter will be perfectly accurate at all times. Use the Service at your own risk.');
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(67, "section")(68, "h2", 10);
+      \u0275\u0275text(69, "8. LIMITATION OF LIABILITY");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(70, "p");
+      \u0275\u0275text(71, "To the maximum extent permitted by law, The Button and its creator shall not be liable for any indirect, incidental, special, or consequential damages arising out of your use of the Service, including but not limited to loss of data or loss of purchased features due to account termination for violations of these Terms.");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(72, "section")(73, "h2", 10);
+      \u0275\u0275text(74, "9. CHANGES TO TERMS");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(75, "p");
+      \u0275\u0275text(76, 'We reserve the right to update these Terms at any time. Continued use of the Service after changes are posted constitutes your acceptance of the updated Terms. We will update the "Last updated" date at the top of this page.');
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(77, "section")(78, "h2", 10);
+      \u0275\u0275text(79, "10. GOVERNING LAW");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(80, "p");
+      \u0275\u0275text(81, "These Terms shall be governed by and construed in accordance with applicable international law. Any disputes shall be resolved in good faith through direct communication before any formal proceedings.");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(82, "section")(83, "h2", 10);
+      \u0275\u0275text(84, "11. CONTACT");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(85, "p");
+      \u0275\u0275text(86, "For questions about these Terms or billing issues, contact us at:");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(87, "p", 16);
+      \u0275\u0275text(88, " support@the-button-pink.vercel.app ");
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275element(89, "div", 17);
+      \u0275\u0275elementStart(90, "div", 18)(91, "a", 19);
+      \u0275\u0275text(92, " \u2190 BACK TO THE BUTTON ");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(93, "span", 20);
+      \u0275\u0275text(94, " Built by Nizar \xB7 Beirut \u{1F1F1}\u{1F1E7} ");
+      \u0275\u0275elementEnd()()()();
+    }
+    if (rf & 2) {
+      \u0275\u0275advance(10);
+      \u0275\u0275textInterpolate1(" Last updated: ", ctx.updated, " ");
+    }
+  }, dependencies: [RouterLink], encapsulation: 2 });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(TermsComponent, [{
+    type: Component,
+    args: [{ selector: "app-terms", standalone: true, imports: [RouterLink], template: `<div class="min-h-screen bg-[#050505] text-white font-body">
+
+  <!-- Noise + vignette -->
+  <div class="noise"></div>
+  <div class="vignette"></div>
+
+  <div class="relative z-10 max-w-2xl mx-auto px-6 py-16">
+
+    <!-- Back -->
+    <a routerLink="/"
+       class="inline-flex items-center gap-2 text-xs tracking-widest uppercase mb-12 transition-colors duration-200"
+       style="color: rgba(255,255,255,0.25);"
+       onmouseover="this.style.color='rgba(255,60,30,0.8)'"
+       onmouseout="this.style.color='rgba(255,255,255,0.25)'">
+      \u2190 Back to The Button
+    </a>
+
+    <!-- Header -->
+    <div class="mb-12">
+      <h1 class="font-display text-5xl tracking-widest mb-3" style="color: white;">
+        TERMS OF SERVICE
+      </h1>
+      <p class="text-xs tracking-widest uppercase" style="color: rgba(255,255,255,0.25);">
+        Last updated: {{ updated }}
+      </p>
+    </div>
+
+    <!-- Divider -->
+    <div class="mb-10 h-px" style="background: linear-gradient(90deg, rgba(204,17,0,0.4), transparent);"></div>
+
+    <div class="space-y-10 text-sm leading-relaxed" style="color: rgba(255,255,255,0.65);">
+
+      <section>
+        <h2 class="font-display text-xl tracking-widest mb-3" style="color: white;">1. ACCEPTANCE OF TERMS</h2>
+        <p>By accessing or using The Button ("the Service") at thebutton.app or any associated domain, you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-xl tracking-widest mb-3" style="color: white;">2. DESCRIPTION OF SERVICE</h2>
+        <p>The Button is a web-based interactive experience that allows users to press a virtual button that increments a shared global counter. The Service may include optional paid features such as additional daily presses, cosmetic upgrades, user titles, and statistical features. The core button-pressing experience is available for free.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-xl tracking-widest mb-3" style="color: white;">3. USER ACCOUNTS</h2>
+        <p>Certain features may require you to create an account. You are responsible for maintaining the confidentiality of your credentials and for all activity under your account. You must provide accurate information and keep it up to date. We reserve the right to suspend or terminate accounts that violate these Terms.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-xl tracking-widest mb-3" style="color: white;">4. PURCHASES AND PAYMENTS</h2>
+        <p class="mb-3">Paid features are offered as one-time purchases or recurring subscriptions. All payments are processed securely by Paddle.com, our Merchant of Record. Paddle handles billing, invoicing, and applicable taxes on our behalf.</p>
+        <p class="mb-3"><strong style="color: rgba(255,255,255,0.85);">Subscriptions</strong> \u2014 Recurring subscriptions are billed on a monthly basis. You may cancel at any time from your account settings. Cancellation takes effect at the end of the current billing period.</p>
+        <p><strong style="color: rgba(255,255,255,0.85);">Refunds</strong> \u2014 All sales are final. We do not offer refunds for one-time purchases or partial refunds for unused subscription periods, except where required by applicable law. If you believe you were charged in error, contact us at the email below.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-xl tracking-widest mb-3" style="color: white;">5. ACCEPTABLE USE</h2>
+        <p class="mb-3">You agree not to:</p>
+        <ul class="list-none space-y-2 pl-4">
+          <li style="border-left: 2px solid rgba(204,17,0,0.4); padding-left: 1rem;">Use bots, scripts, or automated tools to simulate presses or manipulate counters</li>
+          <li style="border-left: 2px solid rgba(204,17,0,0.4); padding-left: 1rem;">Attempt to exploit, hack, or reverse-engineer any part of the Service</li>
+          <li style="border-left: 2px solid rgba(204,17,0,0.4); padding-left: 1rem;">Interfere with the Service's availability or performance</li>
+          <li style="border-left: 2px solid rgba(204,17,0,0.4); padding-left: 1rem;">Use the Service for any unlawful purpose</li>
+        </ul>
+        <p class="mt-3">We reserve the right to reset counts, ban accounts, or revoke purchased features from users who violate these rules, without refund.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-xl tracking-widest mb-3" style="color: white;">6. INTELLECTUAL PROPERTY</h2>
+        <p>All content, design, and code comprising the Service is owned by or licensed to The Button and its creator. You may not copy, reproduce, or distribute any part of the Service without prior written permission.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-xl tracking-widest mb-3" style="color: white;">7. DISCLAIMER OF WARRANTIES</h2>
+        <p>The Service is provided "as is" and "as available" without warranties of any kind, express or implied. We do not guarantee that the Service will be uninterrupted, error-free, or that the counter will be perfectly accurate at all times. Use the Service at your own risk.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-xl tracking-widest mb-3" style="color: white;">8. LIMITATION OF LIABILITY</h2>
+        <p>To the maximum extent permitted by law, The Button and its creator shall not be liable for any indirect, incidental, special, or consequential damages arising out of your use of the Service, including but not limited to loss of data or loss of purchased features due to account termination for violations of these Terms.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-xl tracking-widest mb-3" style="color: white;">9. CHANGES TO TERMS</h2>
+        <p>We reserve the right to update these Terms at any time. Continued use of the Service after changes are posted constitutes your acceptance of the updated Terms. We will update the "Last updated" date at the top of this page.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-xl tracking-widest mb-3" style="color: white;">10. GOVERNING LAW</h2>
+        <p>These Terms shall be governed by and construed in accordance with applicable international law. Any disputes shall be resolved in good faith through direct communication before any formal proceedings.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-xl tracking-widest mb-3" style="color: white;">11. CONTACT</h2>
+        <p>For questions about these Terms or billing issues, contact us at:</p>
+        <p class="mt-2 font-mono text-xs px-4 py-3 rounded" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,60,30,0.8);">
+          support&#64;the-button-pink.vercel.app
+        </p>
+      </section>
+
+    </div>
+
+    <!-- Bottom divider -->
+    <div class="mt-12 h-px" style="background: linear-gradient(90deg, rgba(204,17,0,0.4), transparent);"></div>
+
+    <div class="mt-8 flex items-center justify-between">
+      <a routerLink="/"
+         class="font-display text-sm tracking-widest transition-colors duration-200"
+         style="color: rgba(255,60,30,0.6);"
+         onmouseover="this.style.color='rgba(255,60,30,1)'"
+         onmouseout="this.style.color='rgba(255,60,30,0.6)'">
+        \u2190 BACK TO THE BUTTON
+      </a>
+      <span class="font-mono text-xs" style="color: rgba(255,255,255,0.15);">
+        Built by Nizar \xB7 Beirut \u{1F1F1}\u{1F1E7}
+      </span>
+    </div>
+
+  </div>
+</div>
+` }]
+  }], null, null);
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TermsComponent, { className: "TermsComponent", filePath: "src/app/pages/terms/terms.component.ts", lineNumber: 10 });
+})();
+
+// src/app/app.routes.ts
+var routes = [
+  { path: "", component: HomeComponent },
+  { path: "terms-and-conditions", component: TermsComponent }
+];
+
+// src/app/app.config.ts
+var appConfig = {
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    provideHttpClient()
+  ]
+};
+
+// src/app/app.component.ts
+var AppComponent = class _AppComponent {
+  static \u0275fac = function AppComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _AppComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["app-root"]], decls: 1, vars: 0, template: function AppComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275element(0, "router-outlet");
+    }
+  }, dependencies: [RouterOutlet], encapsulation: 2 });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(AppComponent, [{
+    type: Component,
+    args: [{
+      selector: "app-root",
+      standalone: true,
+      imports: [RouterOutlet],
+      template: `<router-outlet />`
+    }]
+  }], null, null);
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.component.ts", lineNumber: 10 });
 })();
 
 // src/main.ts
