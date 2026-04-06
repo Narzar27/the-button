@@ -2,7 +2,6 @@ import { Injectable, signal, computed, inject, PLATFORM_ID } from '@angular/core
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../environments/environment';
 
-// ─── Supabase types (dynamic import so app still works without credentials) ───
 type SupabaseClient = any;
 
 const LOCAL_PRESS_KEY = 'the_button_my_presses';
@@ -17,11 +16,14 @@ export class CounterService {
   private supabase: SupabaseClient | null = null;
   private channel: any = null;
 
-  // ─── Reactive state ───
-  readonly globalCount = signal<number>(0);
-  readonly myPresses = signal<number>(0);
-  readonly isConnected = signal<boolean>(false);
-  readonly isLoading = signal<boolean>(true);
+  // Promise that resolves once Supabase is ready (or failed)
+  // Presses that arrive before init completes will wait on this
+  private initPromise: Promise<void> | null = null;
+
+  readonly globalCount  = signal<number>(0);
+  readonly myPresses    = signal<number>(0);
+  readonly isConnected  = signal<boolean>(false);
+  readonly isLoading    = signal<boolean>(true);
 
   readonly formattedCount = computed(() =>
     this.globalCount().toLocaleString('en-US')
@@ -29,8 +31,9 @@ export class CounterService {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
+      // Load myPresses from localStorage immediately so it shows on render
       this.myPresses.set(parseInt(localStorage.getItem(LOCAL_PRESS_KEY) ?? '0', 10));
-      this.init();
+      this.initPromise = this.init();
     }
   }
 
@@ -38,8 +41,7 @@ export class CounterService {
     if (SUPABASE_CONFIGURED) {
       await this.initSupabase();
     } else {
-      // ─── Offline / demo mode ───
-      const saved = parseInt(localStorage.getItem(LOCAL_TOTAL_KEY) ?? '42137', 10);
+      const saved = parseInt(localStorage.getItem(LOCAL_TOTAL_KEY) ?? '0', 10);
       this.globalCount.set(saved);
       this.isLoading.set(false);
     }
@@ -81,13 +83,19 @@ export class CounterService {
       this.isLoading.set(false);
     } catch (err) {
       console.warn('Supabase init failed, running in demo mode:', err);
-      const saved = parseInt(localStorage.getItem(LOCAL_TOTAL_KEY) ?? '42137', 10);
+      const saved = parseInt(localStorage.getItem(LOCAL_TOTAL_KEY) ?? '0', 10);
       this.globalCount.set(saved);
       this.isLoading.set(false);
     }
   }
 
   async press(): Promise<void> {
+    // ── Wait for init to complete before pressing ──────────────
+    // Fixes race condition where user presses before Supabase client is ready
+    if (this.initPromise) {
+      await this.initPromise;
+    }
+
     if (SUPABASE_CONFIGURED && this.supabase) {
       // Optimistic update
       this.globalCount.update(n => n + 1);
@@ -96,13 +104,14 @@ export class CounterService {
 
       const { error } = await this.supabase.rpc('increment_button', { amount: 1 });
       if (error) {
-        console.error('Press failed:', error);
-        this.globalCount.update(n => n - 1); // rollback
+        // RPC failed — rollback optimistic update
+        console.error('Press RPC failed:', error.message ?? error);
+        this.globalCount.update(n => n - 1);
         this.myPresses.update(n => n - 1);
         this.saveMy();
       }
     } else {
-      // Demo mode
+      // Demo / offline mode
       this.globalCount.update(n => n + 1);
       this.myPresses.update(n => n + 1);
       this.saveMy();
