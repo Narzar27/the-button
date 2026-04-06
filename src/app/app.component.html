@@ -1,0 +1,201 @@
+<!-- ── Custom cursor ── -->
+<div class="cursor" [style.left.px]="cursorX()" [style.top.px]="cursorY()"></div>
+<div class="cursor-ring" [style.left.px]="cursorRingX()" [style.top.px]="cursorRingY()"></div>
+
+<!-- ── Atmosphere layers ── -->
+<div class="noise"></div>
+<div class="scanlines"></div>
+<div class="vignette"></div>
+
+<!-- ── Flash on press ── -->
+<div class="flash-overlay" [class.flashing]="isFlashing()"></div>
+
+<!-- ── Main page ── -->
+<div #pageEl
+     class="relative z-10 min-h-screen flex flex-col items-center justify-center select-none"
+     [class.shaking]="isShaking()">
+
+  <!-- Ambient background glow -->
+  <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+    <div class="w-[600px] h-[600px] rounded-full"
+         style="background: radial-gradient(circle, rgba(180,10,0,0.08) 0%, transparent 70%); filter: blur(40px);"></div>
+  </div>
+
+  <!-- ── Header ── -->
+  <header class="absolute top-0 left-0 right-0 flex items-center justify-between px-8 pt-8">
+    <div class="font-display text-white/20 tracking-[0.3em] text-xs uppercase">
+      EST. {{ currentYear }}
+    </div>
+    <div class="flex items-center gap-2">
+      <!-- Live dot -->
+      <span class="relative flex h-2 w-2" *ngIf="counter.isConnected()">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+      </span>
+      <span class="font-body text-xs tracking-widest uppercase"
+            [style.color]="counter.isConnected() ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.25)'">
+        {{ counter.isConnected() ? 'Live' : 'Demo' }}
+      </span>
+    </div>
+  </header>
+
+  <!-- ── Title ── -->
+  <div class="text-center mb-16 relative">
+    <h1 class="font-display text-white/10 tracking-[0.5em] text-sm uppercase mb-3"
+        style="letter-spacing: 0.6em;">
+      The Internet's Button
+    </h1>
+    <p class="font-body text-white/20 text-xs tracking-widest uppercase">
+      one button · one counter · the whole world
+    </p>
+  </div>
+
+  <!-- ── Counter ── -->
+  <div class="text-center mb-14 relative">
+    <div class="font-body text-white/20 text-xs tracking-[0.4em] uppercase mb-4">
+      Times Pressed
+    </div>
+
+    <!-- Counter display -->
+    <div class="relative">
+      <div *ngIf="counter.isLoading(); else countDisplay"
+           class="font-mono text-7xl font-bold text-white/20 tracking-tight"
+           style="font-variant-numeric: tabular-nums;">
+        ···
+      </div>
+      <ng-template #countDisplay>
+        <div class="font-mono text-7xl font-bold tracking-tight"
+             style="font-variant-numeric: tabular-nums; line-height: 1;"
+             [style.text-shadow]="justPressed() ? '0 0 40px rgba(255,60,0,0.8), 0 0 80px rgba(255,30,0,0.4)' : '0 0 20px rgba(255,30,0,0.2)'">
+          <span *ngFor="let d of digits(); trackBy: trackDigit"
+                class="digit-flip"
+                [class.animating]="justPressed() && (d === ',' ? false : true)"
+                [style.color]="d === ',' ? 'rgba(255,255,255,0.2)' : 'white'">{{ d }}</span>
+        </div>
+      </ng-template>
+
+      <!-- Glow under counter -->
+      <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 w-48 h-1 rounded-full"
+           style="background: linear-gradient(90deg, transparent, rgba(255,30,0,0.3), transparent);"></div>
+    </div>
+
+    <!-- My presses -->
+    <div class="mt-6 font-mono text-xs tracking-widest"
+         [style.color]="counter.myPresses() > 0 ? 'rgba(255,100,60,0.7)' : 'rgba(255,255,255,0.15)'">
+      You: {{ counter.myPresses() }} {{ counter.myPresses() === 1 ? 'press' : 'presses' }}
+      <span *ngIf="counter.myPresses() > 0" class="ml-2 opacity-60">·</span>
+      <span *ngIf="counter.myPresses() >= 100000" class="ml-2 text-yellow-400/80">God</span>
+      <span *ngIf="counter.myPresses() >= 10000 && counter.myPresses() < 100000" class="ml-2 text-orange-400/80">Legend</span>
+      <span *ngIf="counter.myPresses() >= 1000 && counter.myPresses() < 10000" class="ml-2 text-red-400/80">Addict</span>
+      <span *ngIf="counter.myPresses() >= 100 && counter.myPresses() < 1000" class="ml-2 text-white/50">Presser</span>
+      <span *ngIf="counter.myPresses() > 0 && counter.myPresses() < 100" class="ml-2 text-white/30">Peasant</span>
+    </div>
+  </div>
+
+  <!-- ── THE BUTTON ── -->
+  <div class="relative flex items-center justify-center mb-14">
+
+    <!-- Outer ambient ring 1 -->
+    <div class="absolute rounded-full pointer-events-none"
+         style="width: 320px; height: 320px; border: 1px solid rgba(200,17,0,0.08); animation: glowBreathe 3s ease-in-out infinite;"></div>
+
+    <!-- Outer ambient ring 2 -->
+    <div class="absolute rounded-full pointer-events-none"
+         style="width: 260px; height: 260px; border: 1px solid rgba(200,17,0,0.15); animation: glowBreathe 3s ease-in-out infinite; animation-delay: 0.5s;"></div>
+
+    <!-- Ripple on press -->
+    <div *ngIf="showRipple()" class="ripple-container absolute"
+         style="width: 180px; height: 180px; top: 50%; left: 50%; transform: translate(-50%,-50%);">
+      <div class="ripple"></div>
+    </div>
+
+    <!-- Burst particles -->
+    <div *ngFor="let p of burstParticles(); trackBy: trackParticle"
+         class="burst-particle absolute top-1/2 left-1/2"
+         [style.--bx]="p.x"
+         [style.--by]="p.y"
+         [style.background]="p.color"
+         style="margin: -2px 0 0 -2px;">
+    </div>
+
+    <!-- The Button itself -->
+    <button
+      #btnEl
+      (click)="onPress($event)"
+      [class.btn-pressing]="isPressed()"
+      class="relative rounded-full outline-none focus:outline-none border-0"
+      style="
+        width: 180px;
+        height: 180px;
+        cursor: none;
+        background: radial-gradient(circle at 38% 35%, #ff3300 0%, #cc1100 45%, #880800 100%);
+        box-shadow:
+          0 0 50px 15px rgba(204,17,0,0.35),
+          0 0 100px 30px rgba(204,17,0,0.12),
+          inset 0 -6px 24px rgba(0,0,0,0.5),
+          inset 0 6px 12px rgba(255,80,40,0.25);
+        animation: glowBreathe 3s ease-in-out infinite;
+        transition: box-shadow 0.1s;
+      "
+      aria-label="Press the button"
+    >
+      <!-- Inner highlight -->
+      <div class="absolute rounded-full pointer-events-none"
+           style="
+             top: 12%; left: 16%; width: 40%; height: 30%;
+             background: radial-gradient(ellipse, rgba(255,140,100,0.35) 0%, transparent 80%);
+             filter: blur(4px);
+           "></div>
+
+      <!-- Center label -->
+      <span class="relative font-display text-white/90 tracking-widest pointer-events-none"
+            style="font-size: 1rem; letter-spacing: 0.25em; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">
+        PRESS
+      </span>
+    </button>
+  </div>
+
+  <!-- ── Tagline ── -->
+  <div class="text-center mb-10">
+    <p class="font-body text-white/20 text-xs tracking-[0.3em] uppercase">
+      No reason needed.
+    </p>
+  </div>
+
+  <!-- ── Share button ── -->
+  <div class="relative">
+    <button
+      (click)="share()"
+      class="group font-body text-xs tracking-widest uppercase px-8 py-3 rounded-full transition-all duration-300"
+      style="
+        cursor: none;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.3);
+        background: rgba(255,255,255,0.03);
+      "
+      onmouseover="this.style.borderColor='rgba(255,34,0,0.4)'; this.style.color='rgba(255,100,60,0.8)'; this.style.background='rgba(204,17,0,0.08)';"
+      onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.color='rgba(255,255,255,0.3)'; this.style.background='rgba(255,255,255,0.03)';"
+    >
+      Share the madness
+    </button>
+
+    <!-- Share toast -->
+    <div *ngIf="showShareToast()"
+         class="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-xs px-4 py-2 rounded-full"
+         style="
+           background: rgba(204,17,0,0.15);
+           border: 1px solid rgba(204,17,0,0.3);
+           color: rgba(255,100,60,0.9);
+         ">
+      Copied to clipboard
+    </div>
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer class="absolute bottom-0 left-0 right-0 pb-6 flex items-center justify-center gap-6">
+    <span class="font-body text-white/15 text-xs tracking-widest">
+      Built by Nizar · Beirut 🇱🇧
+    </span>
+  </footer>
+
+</div>
