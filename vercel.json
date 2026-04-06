@@ -1,6 +1,6 @@
 {
   "installCommand": "npm install",
-  "buildCommand": "npx ng build --configuration production",
+  "buildCommand": "node ./node_modules/@angular/cli/bin/ng.js build --configuration production",
   "outputDirectory": "dist/the-button/browser",
   "framework": null,
   "rewrites": [
