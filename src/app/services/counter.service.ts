@@ -104,11 +104,10 @@ export class CounterService {
 
       const { error } = await this.supabase.rpc('increment_button', { amount: 1 });
       if (error) {
-        // RPC failed — rollback optimistic update
+        // RPC failed — rollback global count only, never rollback myPresses
+        // myPresses is localStorage-only and always reflects what the user pressed
         console.error('Press RPC failed:', error.message ?? error);
         this.globalCount.update(n => n - 1);
-        this.myPresses.update(n => n - 1);
-        this.saveMy();
       }
     } else {
       // Demo / offline mode
