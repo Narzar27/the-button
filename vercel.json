@@ -1,5 +1,6 @@
 {
-  "buildCommand": "npx ng build",
+  "installCommand": "npm install",
+  "buildCommand": "npx ng build --configuration production",
   "outputDirectory": "dist/the-button/browser",
   "framework": null,
   "rewrites": [
