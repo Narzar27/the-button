@@ -32,10 +32,9 @@
         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
         <span class="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
       </span>
-      <span class="font-body text-xs tracking-widest uppercase"
-            [style.color]="counter.isConnected() ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.25)'">
-        {{ counter.isConnected() ? 'Live' : 'Demo' }}
-      </span>
+      <span *ngIf="counter.isConnected()"
+            class="font-body text-xs tracking-widest uppercase"
+            style="color: rgba(239,68,68,0.6)">Live</span>
     </div>
   </header>
 
