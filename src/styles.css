@@ -179,6 +179,16 @@ html, body {
 }
 .daily-info span { color: var(--yellow); }
 
+/* ── Share button ── */
+.share-btn {
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 99px; padding: 10px 28px;
+  font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800;
+  color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.15s;
+  margin: 0 auto 24px; display: block;
+}
+.share-btn:hover { border-color: rgba(255,217,61,0.4); color: #FFD93D; }
+
 /* ── Stats row ── */
 .stats-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 20px 0; }
 .stat-card {

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#16213e"/>
+      <stop offset="100%" stop-color="#0f0f1a"/>
+    </radialGradient>
+    <radialGradient id="egg" cx="38%" cy="32%" r="65%">
+      <stop offset="0%" stop-color="#FFFACD"/>
+      <stop offset="60%" stop-color="#FFD93D"/>
+      <stop offset="100%" stop-color="#E8C84A"/>
+    </radialGradient>
+    <radialGradient id="shine" cx="30%" cy="25%" r="35%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.7)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Stars -->
+  <circle cx="80" cy="60" r="1.5" fill="white" opacity="0.6"/>
+  <circle cx="200" cy="120" r="1" fill="white" opacity="0.4"/>
+  <circle cx="350" cy="40" r="2" fill="white" opacity="0.5"/>
+  <circle cx="900" cy="80" r="1.5" fill="white" opacity="0.6"/>
+  <circle cx="1050" cy="150" r="1" fill="white" opacity="0.4"/>
+  <circle cx="1150" cy="50" r="2" fill="white" opacity="0.5"/>
+  <circle cx="150" cy="400" r="1" fill="white" opacity="0.3"/>
+  <circle cx="1100" cy="500" r="1.5" fill="white" opacity="0.4"/>
+  <circle cx="50" cy="300" r="1" fill="white" opacity="0.5"/>
+  <circle cx="1180" cy="350" r="1" fill="white" opacity="0.3"/>
+
+  <!-- Egg -->
+  <g transform="translate(540, 80)">
+    <ellipse cx="120" cy="155" rx="95" ry="120" fill="url(#egg)"/>
+    <!-- Crack -->
+    <path d="M 120 80 L 115 95 L 125 110 L 118 130" stroke="rgba(0,0,0,0.25)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M 140 100 L 145 115 L 138 125" stroke="rgba(0,0,0,0.25)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- Shine -->
+    <ellipse cx="88" cy="105" rx="32" ry="22" fill="url(#shine)"/>
+  </g>
+
+  <!-- Title -->
+  <text x="140" y="220" font-family="Georgia, serif" font-size="96" font-weight="bold" fill="white">The Egg</text>
+  <text x="147" y="222" font-family="Georgia, serif" font-size="96" font-weight="bold" fill="none" stroke="#FFD93D" stroke-width="1" opacity="0.3">The Egg</text>
+
+  <!-- Emoji -->
+  <text x="530" y="220" font-size="80">🥚</text>
+
+  <!-- Subtitle -->
+  <text x="140" y="300" font-family="Georgia, serif" font-size="36" fill="rgba(255,255,255,0.6)">One egg. 4 billion clicks.</text>
+  <text x="140" y="350" font-family="Georgia, serif" font-size="36" fill="rgba(255,255,255,0.6)">Everyone in the world. Together.</text>
+
+  <!-- CTA -->
+  <rect x="140" y="410" width="340" height="64" rx="32" fill="#FFD93D"/>
+  <text x="310" y="452" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="#1a1a2e" text-anchor="middle">Crack It Now →</text>
+
+  <!-- Bottom tagline -->
+  <text x="140" y="570" font-family="Georgia, serif" font-size="22" fill="rgba(255,255,255,0.25)">Nobody knows what's inside the last one.</text>
+</svg>

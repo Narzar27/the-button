@@ -27,6 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly clickLimit = inject(ClickLimitService);
 
   readonly showAuthModal = signal(false);
+  readonly showShareToast = signal(false);
   readonly wiggling = signal(false);
   readonly cracking = signal(false);
   readonly toast = signal<string | null>(null);
@@ -154,6 +155,21 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + 'M';
     if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
     return n.toLocaleString('en-US');
+  }
+
+  async share(): Promise<void> {
+    const count = this.formatNumber(this.supabase.globalClicks());
+    const url = 'https://the-button-pink.vercel.app';
+    const text = `🥚 We've cracked the egg ${count} times. Help us reach 4 billion — nobody knows what's inside. ${url}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'The Egg 🥚', text, url });
+      } else {
+        await navigator.clipboard.writeText(text);
+        this.showShareToast.set(true);
+        setTimeout(() => this.showShareToast.set(false), 2000);
+      }
+    } catch {}
   }
 
   trackStar(_: number, s: Star) { return s.id; }

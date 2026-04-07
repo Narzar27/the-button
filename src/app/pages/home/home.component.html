@@ -113,6 +113,11 @@
       }
     </div>
 
+    <!-- Share button -->
+    <button class="share-btn" (click)="share()">
+      @if (showShareToast()) { ✅ Copied! } @else { 🔗 Share the Egg }
+    </button>
+
     <!-- Stats cards -->
     <div class="stats-row">
       <div class="stat-card">
@@ -138,6 +143,5 @@
 
 <!-- Footer -->
 <footer class="page-footer">
-  <span>Built by Nizar · Beirut 🇱🇧</span>
   <a routerLink="/terms-and-conditions">Terms</a>
 </footer>
