@@ -16,6 +16,7 @@ export interface LeaderboardEntry {
   id: string;
   display_name: string;
   total_clicks: number;
+  eggs_cracked: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -113,15 +114,28 @@ export class SupabaseService {
   }
 
   async getLeaderboard(_tab: 'alltime' | 'thisegg' | 'today' | 'country' = 'alltime'): Promise<LeaderboardEntry[]> {
-    // All tabs query total_clicks from users for now.
-    // Future: add egg-specific and daily click views.
     const { data } = await this.client
       .from('users')
-      .select('id, display_name, total_clicks')
+      .select('id, display_name, total_clicks, eggs_cracked')
       .order('total_clicks', { ascending: false })
       .limit(20);
-
     return (data ?? []) as LeaderboardEntry[];
+  }
+
+  async getBreaksLeaderboard(): Promise<LeaderboardEntry[]> {
+    const { data } = await this.client
+      .from('users')
+      .select('id, display_name, total_clicks, eggs_cracked')
+      .order('eggs_cracked', { ascending: false })
+      .limit(20);
+    return (data ?? []) as LeaderboardEntry[];
+  }
+
+  async incrementUserBreaks(): Promise<void> {
+    const user = this.currentUser();
+    if (!user) return;
+    const { error } = await this.client.rpc('increment_user_breaks', { uid: user.id });
+    if (error) console.error('incrementUserBreaks failed:', error);
   }
 
   async signInWithEmail(email: string): Promise<void> {

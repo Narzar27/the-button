@@ -102,6 +102,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (newStage > prevStage) {
       this.spawnParticles(x, y);
       this.showToast(`💥 Stage ${newStage + 1}! The cracks deepen...`);
+      this.supabase.incrementUserBreaks();
     }
 
     // Register click + remote increment
