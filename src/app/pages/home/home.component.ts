@@ -1,142 +1,162 @@
 import {
-  Component, inject, signal, computed, OnInit, OnDestroy,
-  PLATFORM_ID, ElementRef, ViewChild, ChangeDetectionStrategy
+  Component, inject, signal, computed, OnInit, OnDestroy, PLATFORM_ID,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { CounterService } from '../../services/counter.service';
+import { SupabaseService } from '../../services/supabase.service';
+import { ClickLimitService } from '../../services/click-limit.service';
+import { AuthModalComponent } from '../../components/auth-modal/auth-modal.component';
+import { EggComponent } from '../../components/egg/egg.component';
 
-interface BurstParticle {
-  id: number;
-  x: string;
-  y: string;
-  color: string;
-}
+interface Floater { id: number; x: number; y: number; }
+interface Particle { id: number; x: number; y: number; tx: string; ty: string; rot: string; color: string; size: number; dur: number; }
+interface Star { id: number; x: number; y: number; size: number; duration: number; delay: number; }
+
+let floaterId = 0;
+let particleId = 0;
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [RouterLink, AuthModalComponent, EggComponent],
   templateUrl: './home.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
-  readonly counter = inject(CounterService);
+  readonly supabase = inject(SupabaseService);
+  readonly clickLimit = inject(ClickLimitService);
 
-  readonly isPressed = signal(false);
-  readonly isShaking = signal(false);
-  readonly isFlashing = signal(false);
-  readonly showRipple = signal(false);
-  readonly burstParticles = signal<BurstParticle[]>([]);
-  readonly justPressed = signal(false);
-  readonly showShareToast = signal(false);
+  readonly showAuthModal = signal(false);
+  readonly wiggling = signal(false);
+  readonly cracking = signal(false);
+  readonly toast = signal<string | null>(null);
+  readonly floaters = signal<Floater[]>([]);
+  readonly particles = signal<Particle[]>([]);
+  readonly myClicks = signal(0);
 
-  cursorX = signal(0);
-  cursorY = signal(0);
-  cursorRingX = signal(0);
-  cursorRingY = signal(0);
+  readonly stars: Star[] = [];
 
-  prevCount = signal(0);
-  digits = computed(() => this.counter.formattedCount().split(''));
+  private wiggleTimer: any;
+  private crackTimer: any;
+  private toastTimer: any;
 
-  @ViewChild('btnEl') btnEl!: ElementRef<HTMLButtonElement>;
-  @ViewChild('pageEl') pageEl!: ElementRef<HTMLDivElement>;
+  readonly formattedGlobal = computed(() => this.formatNumber(this.supabase.globalClicks()));
+  readonly formattedRemaining = computed(() => this.formatNumber(
+    Math.max(0, this.supabase.targetClicks() - this.supabase.globalClicks())
+  ));
 
-  readonly currentYear = new Date().getFullYear();
-  private particleId = 0;
-  private ringRaf: number | null = null;
-  private ringX = 0;
-  private ringY = 0;
-  private mouseMoveHandler!: (e: MouseEvent) => void;
-  private rippleTimeout: any;
-  private shakeTimeout: any;
-  private flashTimeout: any;
-
-  ngOnInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-    this.mouseMoveHandler = (e: MouseEvent) => {
-      this.cursorX.set(e.clientX);
-      this.cursorY.set(e.clientY);
-      this.animateRing(e.clientX, e.clientY);
-    };
-    document.addEventListener('mousemove', this.mouseMoveHandler);
-  }
-
-  ngOnDestroy(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-    document.removeEventListener('mousemove', this.mouseMoveHandler);
-    if (this.ringRaf) cancelAnimationFrame(this.ringRaf);
-  }
-
-  private animateRing(tx: number, ty: number): void {
-    if (this.ringRaf) cancelAnimationFrame(this.ringRaf);
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-    const tick = () => {
-      this.ringX = lerp(this.ringX, tx, 0.12);
-      this.ringY = lerp(this.ringY, ty, 0.12);
-      this.cursorRingX.set(this.ringX);
-      this.cursorRingY.set(this.ringY);
-      if (Math.abs(this.ringX - tx) > 0.5 || Math.abs(this.ringY - ty) > 0.5) {
-        this.ringRaf = requestAnimationFrame(tick);
-      }
-    };
-    this.ringRaf = requestAnimationFrame(tick);
-  }
-
-  async onPress(event: MouseEvent | TouchEvent): Promise<void> {
-    if (this.isPressed()) return;
-    this.isPressed.set(true);
-    this.isFlashing.set(true);
-    this.isShaking.set(true);
-    this.showRipple.set(true);
-    this.justPressed.set(true);
-    this.spawnBurst(event);
-    await this.counter.press();
-    clearTimeout(this.flashTimeout);
-    this.flashTimeout = setTimeout(() => this.isFlashing.set(false), 350);
-    clearTimeout(this.shakeTimeout);
-    this.shakeTimeout = setTimeout(() => this.isShaking.set(false), 400);
-    clearTimeout(this.rippleTimeout);
-    this.rippleTimeout = setTimeout(() => this.showRipple.set(false), 700);
-    setTimeout(() => this.isPressed.set(false), 350);
-    setTimeout(() => this.justPressed.set(false), 1200);
-  }
-
-  private spawnBurst(_event: MouseEvent | TouchEvent): void {
-    const colors = ['#ff2200', '#ff4400', '#ff6600', '#ffaa00', '#ffffff'];
-    const count = 12;
-    const particles: BurstParticle[] = [];
-    for (let i = 0; i < count; i++) {
-      const angle = (i / count) * Math.PI * 2;
-      const dist = 50 + Math.random() * 60;
-      particles.push({
-        id: ++this.particleId,
-        x: `${Math.cos(angle) * dist}px`,
-        y: `${Math.sin(angle) * dist}px`,
-        color: colors[Math.floor(Math.random() * colors.length)],
+  constructor() {
+    // Generate stars on construction (consistent set)
+    for (let i = 0; i < 60; i++) {
+      this.stars.push({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: 1 + Math.random() * 2.5,
+        duration: 2 + Math.random() * 4,
+        delay: Math.random() * 4,
       });
     }
-    this.burstParticles.set(particles);
-    setTimeout(() => this.burstParticles.set([]), 650);
   }
 
-  async share(): Promise<void> {
-    const count = this.counter.globalCount();
-    const url = window.location.href;
-    const text = `The Button has been pressed ${count.toLocaleString('en-US')} times and counting. Can you resist? ${url}`;
+  ngOnInit(): void {}
+  ngOnDestroy(): void {
+    clearTimeout(this.wiggleTimer);
+    clearTimeout(this.crackTimer);
+    clearTimeout(this.toastTimer);
+  }
+
+  async onEggClick(event: MouseEvent | TouchEvent): Promise<void> {
+    if (!this.clickLimit.canClick()) {
+      this.showToast('⚡ Daily limit reached! Get more clicks in the store.');
+      return;
+    }
+
+    const x = event instanceof MouseEvent
+      ? event.clientX
+      : event.touches[0]?.clientX ?? window.innerWidth / 2;
+    const y = event instanceof MouseEvent
+      ? event.clientY
+      : event.touches[0]?.clientY ?? window.innerHeight / 2;
+
+    const prevStage = this.supabase.crackStage();
+
+    // Optimistic local update
+    this.supabase.egg.update(e => e ? { ...e, current_clicks: e.current_clicks + 1 } : e);
+    this.myClicks.update(n => n + 1);
+
+    // Animate
+    this.wiggling.set(true);
+    this.cracking.set(true);
+    clearTimeout(this.wiggleTimer);
+    clearTimeout(this.crackTimer);
+    this.wiggleTimer = setTimeout(() => this.wiggling.set(false), 400);
+    this.crackTimer = setTimeout(() => this.cracking.set(false), 300);
+
+    this.spawnFloater(x, y);
+    this.spawnParticles(x, y);
+
+    // Check for stage change
+    const newStage = this.supabase.crackStage();
+    if (newStage > prevStage) {
+      this.spawnParticles(x, y);
+      this.showToast(`💥 Stage ${newStage + 1}! The cracks deepen...`);
+    }
+
+    // Register click + remote increment
+    await this.clickLimit.registerClick();
     try {
-      if (navigator.share) {
-        await navigator.share({ title: 'The Button', text, url });
-      } else {
-        await navigator.clipboard.writeText(text);
-        this.showShareToast.set(true);
-        setTimeout(() => this.showShareToast.set(false), 2500);
-      }
-    } catch (_) {}
+      await this.supabase.incrementEgg();
+    } catch {
+      // Rollback optimistic update
+      this.supabase.egg.update(e => e ? { ...e, current_clicks: Math.max(0, e.current_clicks - 1) } : e);
+      this.myClicks.update(n => Math.max(0, n - 1));
+    }
   }
 
-  trackParticle(_: number, p: BurstParticle) { return p.id; }
-  trackDigit(i: number, d: string) { return `${i}-${d}`; }
+  private spawnFloater(x: number, y: number): void {
+    const f: Floater = { id: ++floaterId, x: x + (Math.random() - 0.5) * 30, y };
+    this.floaters.update(arr => [...arr, f]);
+    setTimeout(() => this.floaters.update(arr => arr.filter(fl => fl.id !== f.id)), 900);
+  }
+
+  private spawnParticles(x: number, y: number): void {
+    const colors = ['#FFD93D', '#FF9F1C', '#FF6B6B', '#FFF8DC'];
+    const pts: Particle[] = Array.from({ length: 8 }, (_, i) => {
+      const angle = (i / 8) * Math.PI * 2 + Math.random() * 0.5;
+      const dist = 40 + Math.random() * 60;
+      return {
+        id: ++particleId,
+        x, y,
+        tx: (Math.cos(angle) * dist) + 'px',
+        ty: (Math.sin(angle) * dist) + 'px',
+        rot: ((Math.random() - 0.5) * 360) + 'deg',
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: 6 + Math.random() * 8,
+        dur: 0.4 + Math.random() * 0.3,
+      };
+    });
+    this.particles.update(arr => [...arr, ...pts]);
+    setTimeout(() => {
+      const ids = new Set(pts.map(p => p.id));
+      this.particles.update(arr => arr.filter(p => !ids.has(p.id)));
+    }, 800);
+  }
+
+  private showToast(msg: string): void {
+    this.toast.set(msg);
+    clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => this.toast.set(null), 2500);
+  }
+
+  formatNumber(n: number): string {
+    if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(3) + 'B';
+    if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + 'M';
+    if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
+    return n.toLocaleString('en-US');
+  }
+
+  trackStar(_: number, s: Star) { return s.id; }
+  trackFloater(_: number, f: Floater) { return f.id; }
+  trackParticle(_: number, p: Particle) { return p.id; }
 }

@@ -1,24 +1,26 @@
-# CLAUDE.md — The Button
+# CLAUDE.md — The Egg
 
 ## Project
-Viral "press the button" web app. One button, one global counter, the whole world pressing it.
-Built by Nizar (Beirut, Lebanon). Solo project, $15 budget, global ambitions.
+Global egg-cracking web app. One egg, 4 billion clicks, everyone in the world together.
+Nobody knows what's inside the last one.
+Built by Nizar (Beirut, Lebanon 🇱🇧). Solo project, $15 budget, global ambitions.
 
 ## Stack
 - **Framework:** Angular 19 standalone components, signals-based reactivity
-- **Styling:** Tailwind CSS v3 + custom CSS (in `src/styles.css`)
+- **Styling:** Tailwind CSS v3 + custom CSS in `src/styles.css` (Fredoka One + Nunito fonts)
 - **Database:** Supabase (PostgreSQL) at `bxsrcjyguitmkrkqtxdn.supabase.co`
-- **Realtime:** Supabase Realtime (subscribed to `button_presses` and `god_mode` tables)
-- **Payments:** Paddle Billing (awaiting account approval)
+- **Realtime:** Supabase Realtime (subscribed to `eggs` table)
+- **Auth:** Supabase Auth — Google OAuth + email magic link
+- **Payments:** Paddle Billing (awaiting account approval — scaffolded in PaddleService)
 - **Hosting:** Vercel — auto-deploys on push to `main`
 - **Repo:** https://github.com/Narzar27/the-button
 
 ## Build Commands
 ```bash
 # Dev server
-npm start                          # → http://localhost:4200
+npm start   # → http://localhost:4200
 
-# Build (use this, not `ng build` directly — Vercel permission issue workaround)
+# Build (use this, not `ng build` directly)
 node ./node_modules/@angular/cli/bin/ng.js build --configuration development
 node ./node_modules/@angular/cli/bin/ng.js build --configuration production
 
@@ -31,90 +33,66 @@ git push    # Vercel auto-deploys from main
 src/
   app/
     pages/
-      home/          ← main button page (HomeComponent)
-      terms/         ← /terms-and-conditions (for Paddle)
-    components/      ← (to be created in Plan A/B)
-      press-limit-modal/
-      shop-modal/
-      restore-modal/
-      streak-badge/
-      god-mode-section/
+      home/           ← main egg page (HomeComponent)
+      leaderboard/    ← /leaderboard
+      perks/          ← /perks (PerkStoreComponent)
+      terms/          ← /terms-and-conditions
+    components/
+      egg/            ← EggComponent — SVG egg with 9 crack stages
+      nav/            ← NavComponent — header + tabs
+      auth-modal/     ← AuthModalComponent — email + Google sign in
     services/
-      counter.service.ts       ← global press counter + Supabase Realtime
-      anon-identity.service.ts ← (Plan A) permanent UUID per visitor
-      purchase.service.ts      ← (Plan A) press limits, extra presses, streak
-      paddle.service.ts        ← (Plan A) Paddle.js checkout
-      god-mode.service.ts      ← (Plan B) auction state + Realtime
+      supabase.service.ts       ← Supabase client + egg data + auth methods
+      anon-identity.service.ts  ← UUID in localStorage (egg_anon_id)
+      click-limit.service.ts    ← daily click tracking (10/day, extra clicks)
+      paddle.service.ts         ← Paddle scaffold (openCheckout logs to console)
+      auth.service.ts           ← wraps Supabase Auth, exposes signals
   environments/
-    environment.ts             ← dev config (Supabase + Paddle placeholders)
-    environment.prod.ts        ← prod config (same)
-  styles.css                   ← global styles, animations, custom cursor
-supabase/
-  functions/
-    paddle-webhook/            ← (Plan A) Paddle webhook handler (Deno)
-    create-auction-checkout/   ← (Plan B) dynamic Paddle checkout for bids
-docs/
-  superpowers/
-    specs/    ← design documents
-    plans/    ← implementation plans (Plan A, Plan B)
+    environment.ts       ← Supabase credentials
+    environment.prod.ts  ← same
+  styles.css             ← global styles, egg theme, animations
 ```
 
 ## Key Design Decisions
-- **No auth** — anonymous UUID in localStorage (`tb_anon_id`) is the user identity
-- **Persistence** — purchases stored in Supabase `purchases` table keyed by `anon_id`
-- **Cross-device restore** — email lookup from Paddle receipt
-- **Press limit** — 1 free press/day; purchased extra presses persist forever (never reset)
-- **Paddle** — Merchant of Record; handles VAT, fraud, global tax
-- **Payoneer** — receives Paddle payouts → Lebanese USD bank account
+- **Anon identity** — UUID in localStorage (`egg_anon_id`) used for daily click tracking
+- **Daily limit** — 10 free clicks/day, tracked locally + synced to Supabase `daily_clicks`
+- **Extra clicks** — stored in localStorage (`egg_extra_clicks`), added via Paddle purchases (wired later)
+- **Realtime** — Supabase Realtime on `eggs` table, optimistic local updates on click
+- **Paddle** — scaffold only; `PaddleService.openCheckout()` logs to console until account approved
 
 ## Supabase Tables
 | Table | Purpose |
 |---|---|
-| `button_presses` | Single row, global counter (id=1) |
-| `purchases` | Per-user purchases keyed by `anon_id` |
-| `god_mode` | Single row, current God + bid + auction timer (id=1) |
+| `eggs` | Current egg — number, target_clicks, current_clicks, cracked_at |
+| `users` | Authenticated users — id, display_name, total_clicks |
+| `daily_clicks` | Per-anon daily click counts — anon_id, date, click_count |
+| `purchases` | Payment records — anon_id, user_id, product_type, quantity |
 
 ## RPC Functions
 | Function | Purpose |
 |---|---|
-| `increment_button(amount)` | Atomic press counter increment |
-| `consume_extra_press(p_anon_id)` | Safely decrement extra presses (floor 0) |
-| `consume_streak_freeze(p_anon_id)` | Safely decrement streak freezes (floor 0) |
-| `add_extra_presses(anon_id, email, amount)` | Upsert + add extra presses after purchase |
-| `add_streak_freezes(anon_id, email, amount)` | Upsert + add streak freezes after purchase |
-| `claim_god_mode(name, anon_id, bid)` | Atomic: update God only if bid is highest |
+| `increment_egg(amount)` | Atomic egg click counter increment |
 
-## Environment Variables (Paddle — fill after approval)
-In `src/environments/environment.ts` and `environment.prod.ts`:
-```typescript
-paddle: {
-  clientToken: 'YOUR_PADDLE_CLIENT_TOKEN',
-  prices: {
-    extraPresses10:     'pri_...',
-    unlimitedMonthly:   'pri_...',
-    titlePresserLegend: 'pri_...',
-    streakFreeze:       'pri_...',
-  }
-}
-```
+## Supabase SQL to run (one-time setup)
+See `supabase/migrations/001_egg_schema.sql` — run this in Supabase SQL editor.
 
-In Supabase Edge Function secrets:
-```
-PADDLE_WEBHOOK_SECRET
-PADDLE_API_KEY
-PADDLE_GOD_MODE_PRODUCT_ID
-SITE_URL = https://the-button-pink.vercel.app
-```
-
-## Style / Aesthetic Rules
-- Dark void aesthetic: `#050505` background, deep red (`#cc1100`) accent
-- Fonts: `Bebas Neue` (display), `JetBrains Mono` (numbers), `Syne` (body)
-- Custom cursor (red dot + lagging ring) — don't add `cursor: default` anywhere
-- All animations in `src/styles.css` — add new ones there
-- Tailwind `/` opacity classes (e.g. `text-white/50`) work in templates but NOT in `[class.text-white/50]` bindings — use `[style.color]` instead
+## Design / Theme
+- Background: dark navy gradient (`#1a1a2e → #16213e → #0f3460`) with star particles
+- Primary: egg yellow `#FFD93D`, accent: orange `#FF9F1C`
+- Fonts: `Fredoka One` (headings/counters), `Nunito` (body)
+- Egg: 9 SVG crack stages (0 = pristine, 8 = barely holding together)
+- Animations: egg-wiggle on click, egg-crack-flash on stage change, floating +1 indicators
 
 ## Gotchas
-- Build with `node ./node_modules/@angular/cli/bin/ng.js build` not `npx ng build` (permission issue on Vercel CI)
-- Vercel output dir: `dist/the-button/browser` (Angular 19 app builder)
-- Supabase Realtime must be enabled per-table in Dashboard → Database → Publications → `supabase_realtime`
-- `dist/` is NOT in `.gitignore` — avoid committing it (add it if needed)
+- Build with `node ./node_modules/@angular/cli/bin/ng.js build` not `npx ng build`
+- Vercel output dir: `dist/the-button/browser`
+- Supabase Realtime must be enabled per-table in Dashboard → Database → Publications → `supabase_realtime` (enable the `eggs` table)
+- `dist/` is in `.gitignore`
+- Tailwind `/` opacity classes work in templates but NOT in `[class.text-white/50]` bindings
+
+## Paddle (pending)
+Once Paddle account is approved:
+1. Create products in Paddle dashboard
+2. Add price IDs to `environment.ts` under `paddle.prices`
+3. Replace console.log in `PaddleService.openCheckout()` with real Paddle.js checkout call
+4. Deploy Supabase Edge Function `paddle-webhook` to unlock purchases
