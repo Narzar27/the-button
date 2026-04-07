@@ -1,93 +1,112 @@
-# The Button — Current Sprint Plan
+# The Egg 🥚 — Current Sprint Plan
 
 _Updated: April 7, 2026_
 
 ---
 
-## Status: Waiting on Paddle Approval ⏳
+## Status: MVP Live, Supabase wiring pending ✅ / 📋
 
-All code for Phase 1 (payments) is planned and documented. Nothing to build until Paddle approves.
+The Angular app is fully built and deployed. The remaining blockers are all Supabase dashboard actions (not code) and Paddle approval.
 
 ---
 
 ## Immediate Next Steps (in order)
 
-### 1. When Paddle approves your account
-- [ ] Log into Paddle Dashboard
-- [ ] Create 4 products + get price IDs:
-  - `10 Extra Presses` ($0.99 one-time) → copy `pri_...`
-  - `Unlimited Daily` ($2.99/month subscription) → copy `pri_...`
-  - `Presser Legend` ($0.99 one-time) → copy `pri_...`
-  - `Streak Freeze` ($0.99 one-time) → copy `pri_...`
-  - `God Mode Bid` (no price — product container only) → copy product ID
-- [ ] Get Client-side token: Developer Tools → Authentication
-- [ ] Get API key: Developer Tools → Authentication → Secret key
-- [ ] Paste into `src/environments/environment.ts` + `environment.prod.ts`
+### 1. Run Supabase migrations (now)
+- [ ] Open Supabase Dashboard → SQL Editor
+- [ ] Run `supabase/migrations/001_egg_schema.sql`
+- [ ] Run `supabase/migrations/002_user_tracking.sql`
 
-### 2. Execute Plan A (Core Payment)
-Full plan: `docs/superpowers/plans/2026-04-07-plan-a-core-payment.md`
+### 2. Enable Realtime on eggs table (now)
+- [ ] Supabase Dashboard → Database → Publications → `supabase_realtime`
+- [ ] Toggle on the `eggs` table
+- [ ] Save
 
-- [ ] Task 1: Run `supabase-payments-setup.sql` in Supabase
-- [ ] Task 2: Create `AnonIdentityService`
-- [ ] Task 3: Add Paddle config to environments
-- [ ] Task 4: Create `PurchaseService`
-- [ ] Task 5: Create `PaddleService`
-- [ ] Task 6: Create `PressLimitModal`
-- [ ] Task 7: Create `ShopModal`
-- [ ] Task 8: Create `RestoreModal`
-- [ ] Task 9: Wire `HomeComponent`
-- [ ] Task 10: Deploy `paddle-webhook` Edge Function + set secrets
-- [ ] Task 11: Register webhook in Paddle + deploy
+### 3. Fix redirect URLs (now)
+- [ ] Supabase Dashboard → Auth → URL Configuration → Redirect URLs
+- [ ] Add `https://the-button-pink.vercel.app/auth/callback`
+- [ ] Add `http://localhost:4200/auth/callback`
 
-### 3. Execute Plan B (Streak + God Mode)
-Full plan: `docs/superpowers/plans/2026-04-07-plan-b-streak-godmode.md`
+### 4. Phase 2 polish tasks (before viral push)
+- [ ] **Share button** — add "Share" button to HomeComponent (Web Share API + clipboard fallback)
+- [ ] **Today leaderboard tab** — query `daily_clicks` table for today's top crackers
+- [ ] **Mobile test** — open on iOS Safari, check egg tap, layout, modals
+- [ ] **OG image** — add a proper `og:image` meta tag (egg screenshot or simple generated card)
+- [ ] **Domain** — buy `theegg.app` or `crackit.app`, point to Vercel (~$12)
 
-- [ ] Task 1: Run `supabase-godmode-setup.sql` in Supabase
-- [ ] Task 2: Add streak logic to `PurchaseService`
-- [ ] Task 3: Create `StreakBadgeComponent`
-- [ ] Task 4: Create `GodModeService`
-- [ ] Task 5: Create `GodModeSectionComponent`
-- [ ] Task 6: Deploy `create-auction-checkout` Edge Function
-- [ ] Task 7: Wire streak + God Mode into `HomeComponent`
-- [ ] Task 8: Deploy
+### 5. When Paddle approves (blocked)
+- [ ] Log into Paddle Dashboard → create 10 products from ROADMAP.md list
+- [ ] Copy all `pri_...` price IDs
+- [ ] Add to `src/environments/environment.ts`:
+  ```ts
+  paddle: {
+    clientToken: 'live_...',
+    prices: {
+      clicks10: 'pri_...',
+      clicks100: 'pri_...',
+      unlimited24h: 'pri_...',
+      unlimitedMonth: 'pri_...',
+      nameOnEgg: 'pri_...',
+      goldenCursor: 'pri_...',
+      crackBadge: 'pri_...',
+      hatchNotif: 'pri_...',
+      certificate: 'pri_...',
+      diamondSkin: 'pri_...',
+    }
+  }
+  ```
+- [ ] Wire real Paddle.js in `PaddleService`:
+  - Load `https://cdn.paddle.com/paddle/v2/paddle.js` lazily
+  - Call `Paddle.Setup({ token: environment.paddle.clientToken })`
+  - Replace `console.log` in `openCheckout()` with `Paddle.Checkout.open(...)`
+- [ ] Deploy `paddle-webhook` Supabase Edge Function
+- [ ] Register webhook URL in Paddle dashboard
 
-### 4. Go viral
-- [ ] Buy domain (`thebutton.app` or `pressthebutton.com`) ~$12
-- [ ] Post on Reddit: r/internetisbeautiful, r/mildlyinteresting, r/webdev
-- [ ] Post on TikTok: open site, press button, say nothing
+### 6. Go viral (after Polish + domain)
+- [ ] Post on Reddit: r/mildlyinteresting, r/internetisbeautiful, r/webdev
+- [ ] Post on TikTok: crack the egg on camera
 - [ ] Post on X: one tweet + link
 
 ---
 
 ## Completed ✅
 
-- [x] Angular 19 project scaffolded
-- [x] Button UI with full animations (flash, shake, ripple, burst)
-- [x] Supabase counter with Realtime sync
-- [x] Vercel deployment (auto-deploy on push)
-- [x] Custom cursor + dark void aesthetic
-- [x] Share functionality
-- [x] Terms of Service page at `/terms-and-conditions`
+- [x] The Button MVP (Angular 19 + Supabase Realtime + Vercel)
+- [x] Pivoted concept to The Egg
+- [x] Full Angular refactor — all components, services, pages
+- [x] 9-stage SVG egg with wiggle/flash/particle animations
+- [x] Global click counter via Supabase Realtime
+- [x] 10 free clicks/day (AnonIdentityService + ClickLimitService)
+- [x] Supabase Auth — Google OAuth + email magic link
+- [x] Auth callback route (PKCE flow)
+- [x] Leaderboard page (real data, empty state, 4 tabs)
+- [x] Perk Store UI (10 perks, Paddle scaffold)
+- [x] AuthModal (email + Google)
+- [x] Dark space theme (stars, Fredoka One + Nunito)
+- [x] Supabase SQL migrations written (001 + 002)
+- [x] User auto-creation trigger + click tracking SQL written
+- [x] CLAUDE.md, ROADMAP.md, SUMMARY.md, PLAN.md updated
 - [x] Payoneer account set up
 - [x] Paddle account applied (under review)
-- [x] Payment system designed (spec + 2 implementation plans)
-- [x] `CLAUDE.md`, `ROADMAP.md`, `SUMMARY.md`, `PLAN.md` created
 
 ---
 
 ## Blocked / Waiting
 | Item | Waiting on | ETA |
 |---|---|---|
-| Payment system | Paddle approval | 1–5 business days |
-| Domain purchase | Your decision on name | — |
+| Real Paddle checkout | Paddle account approval | 1–5 business days |
+| Supabase setup complete | You run the SQL + dashboard steps | Now |
+| Domain | Your decision on name | — |
 
 ---
 
 ## Decisions Log
 | Date | Decision | Reason |
 |---|---|---|
-| Apr 6 | No auth for MVP | Friction kills virality; anonymous UUID is good enough |
 | Apr 6 | Paddle over Stripe | Lebanese individuals can't create Stripe accounts |
-| Apr 6 | Extra presses never reset | User feedback: paid presses should persist across days |
-| Apr 6 | God Mode auction weekly | Weekly reset creates recurring excitement and FOMO |
-| Apr 7 | Streak freeze $0.99 | Duolingo psychology: loss aversion drives purchase |
+| Apr 6 | Payoneer as payout | Best option for Lebanese USD bank transfer |
+| Apr 7 | Pivoted to The Egg | Better virality mechanics, more shareable concept |
+| Apr 7 | 10 free clicks/day | Low enough to create FOMO, high enough to feel generous |
+| Apr 7 | Anonymous UUID tracking | No auth friction for basic clicking |
+| Apr 7 | Leaderboard requires sign-in | Incentivizes auth without forcing it |
+| Apr 7 | Extra clicks stored in localStorage | Simple, no server needed for non-paying users |

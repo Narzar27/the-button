@@ -60,8 +60,9 @@ export class ClickLimitService {
       this._dailyClicks.set(newCount);
       localStorage.setItem(todayKey(), String(newCount));
 
-      // Fire-and-forget sync to Supabase
+      // Fire-and-forget syncs
       this.supabase.syncDailyClick(this.anon.anonId(), today, newCount).catch(console.error);
+      this.supabase.incrementUserClicks().catch(console.error);
     } else {
       // Consume an extra click
       const newExtra = Math.max(0, this._extraClicks() - 1);

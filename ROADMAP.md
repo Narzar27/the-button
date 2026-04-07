@@ -1,4 +1,4 @@
-# The Button — Roadmap
+# The Egg 🥚 — Roadmap
 
 ## Legend
 - ✅ Done
@@ -9,97 +9,131 @@
 
 ---
 
-## Phase 0 — MVP Launch ✅
-> One button. One counter. The whole world.
+## Phase 0 — Concept & Pivot ✅
+> From The Button → The Egg
 
-- ✅ Angular 19 app scaffolded
-- ✅ Big red button with press animations (flash, shake, ripple, burst particles)
-- ✅ Global counter via Supabase Realtime
-- ✅ Share button (Web Share API + clipboard fallback)
-- ✅ Custom cursor (red dot + lagging ring)
-- ✅ Dark void aesthetic (Bebas Neue + JetBrains Mono + Syne)
-- ✅ Deployed to Vercel: https://the-button-pink.vercel.app
-- ✅ Supabase wired: `button_presses` table + `increment_button` RPC
-- ✅ Realtime enabled on `button_presses`
-- ✅ Terms of Service page at `/terms-and-conditions`
+- ✅ The Button MVP launched at the-button-pink.vercel.app
+- ✅ Pivoted concept to The Egg
+- ✅ Core mechanic defined (4B clicks → hatch → smaller egg → forever)
+- ✅ Monetization model finalized
+- ✅ Roadmap written
 
 ---
 
-## Phase 1 — Monetization Core ⏳ Blocked
-> Press limits + Paddle checkout + anonymous purchase persistence
+## Phase 1 — MVP ✅
+> The egg. The counter. The leaderboard.
 
-**Blocker:** Waiting for Paddle account approval (1–5 business days)
+- ✅ Angular 19 full rebranding / rebuild (The Button → The Egg)
+- ✅ 9-stage SVG egg with crack progression + wiggle/flash animations
+- ✅ Global click counter via Supabase Realtime
+- ✅ Floating +1 indicators + shell particle burst on click
+- ✅ Egg progress bar (% toward 4B)
+- ✅ Supabase Auth — Google OAuth + email magic link
+- ✅ Auth callback route (`/auth/callback`) — PKCE flow handled correctly
+- ✅ AnonIdentityService — UUID in localStorage for anonymous tracking
+- ✅ ClickLimitService — 10 free clicks/day, local + Supabase sync
+- ✅ Leaderboard page — real data, empty state, 4 tabs
+- ✅ Perk Store UI — 10 perks, Paddle scaffold
+- ✅ AuthModalComponent — email magic link + Google sign-in
+- ✅ Dark space theme — stars, Fredoka One + Nunito, egg-yellow palette
+- ✅ Supabase schema SQL (`supabase/migrations/001_egg_schema.sql`)
+- ✅ User auto-creation trigger + click tracking (`supabase/migrations/002_user_tracking.sql`)
+- ✅ Deployed to Vercel
 
-**Plan:** `docs/superpowers/plans/2026-04-07-plan-a-core-payment.md`
+**Still needs wiring (one-time Supabase setup):**
+- 📋 Run `002_user_tracking.sql` in Supabase SQL Editor
+- 📋 Enable Realtime on `eggs` table (Dashboard → Database → Publications)
+- 📋 Add `https://the-button-pink.vercel.app/auth/callback` to Supabase redirect URLs
+
+---
+
+## Phase 2 — Polish & Share ✅ / 📋
+> Make it feel alive and spreadable
+
+- 📋 **Share button** — "I've cracked the egg X times. Join me." (Web Share API)
+- 📋 **Leaderboard: Today tab** — query `daily_clicks` table instead of `total_clicks`
+- 📋 **Leaderboard: Country tab** — add country field to `users` table, detect on signup
+- 📋 **User display name editing** — let user change their leaderboard name
+- 📋 **Crack stage badge** on leaderboard row (show stage at time of joining)
+- 📋 **Mobile responsiveness pass** — test on iOS Safari + Android Chrome
+- 📋 **OG image** — custom social preview card
+- 📋 **Domain** — buy `theegg.app` or `crackit.app` (~$12)
+
+---
+
+## Phase 3 — Monetization ⏳ Blocked
+> Paddle approved → wire in payments
+
+**Blocker:** Waiting for Paddle account verification
 
 - ⏳ Paddle account approved
-- 📋 `AnonIdentityService` — permanent UUID per visitor
-- 📋 `purchases` Supabase table + RPCs
-- 📋 `PurchaseService` — press limits (1/day free, extra presses persist)
-- 📋 `PaddleService` — lazy Paddle.js + checkout
-- 📋 `PressLimitModal` — auto-shows when daily limit hit
-- 📋 `ShopModal` — full product grid
-- 📋 `RestoreModal` — cross-device restore by Paddle email
-- 📋 `paddle-webhook` Supabase Edge Function
-- 📋 Wire press limit into HomeComponent
+- 📋 Create products in Paddle dashboard (get `pri_...` price IDs)
+- 📋 Add price IDs + client token to `environment.ts`
+- 📋 Wire real `Paddle.js` checkout in `PaddleService.openCheckout()`
+- 📋 `paddle-webhook` Supabase Edge Function — unlock perks on payment confirmation
+- 📋 Wire extra clicks to `ClickLimitService.addExtraClicks()` after purchase
+- 📋 "Name on egg" perk — scrolling ticker on egg SVG
 
-**Products (to create in Paddle):**
-| Product | Price | Price ID |
+**Paddle products to create:**
+| Product | Price | Type |
 |---|---|---|
-| 10 Extra Presses | $0.99 one-time | `pri_...` |
-| Unlimited Daily | $2.99/month | `pri_...` |
-| Presser Legend title | $0.99 one-time | `pri_...` |
-| Streak Freeze | $0.99 one-time | `pri_...` |
+| 10 Extra Clicks | $0.99 | One-time |
+| 100 Extra Clicks | $4.99 | One-time |
+| Unlimited 24h | $1.99 | One-time |
+| Monthly Unlimited | $4.99/mo | Subscription |
+| Name on the Egg | $2.99 | One-time |
+| Golden Cursor | $1.99 | One-time |
+| Crack Badge (Egg #1) | $1.99 | One-time (limited) |
+| Hatch Notification | $0.99 | One-time |
+| Cracker Certificate | $1.99 | One-time |
+| Diamond Egg Skin | $3.99 | One-time |
 
 ---
 
-## Phase 2 — Streaks + God Mode 📋 Planned
-> Daily habits + competitive auction
+## Phase 4 — Virality Features 💡
+> Make it spread itself
 
-**Depends on:** Phase 1 complete
-
-**Plan:** `docs/superpowers/plans/2026-04-07-plan-b-streak-godmode.md`
-
-- 📋 Streak tracking (count + freeze logic in `PurchaseService`)
-- 📋 `StreakBadgeComponent` (shows at 3+ day streaks 🔥)
-- 📋 `god_mode` Supabase table + `claim_god_mode` RPC
-- 📋 `GodModeService` (Realtime subscription to auction)
-- 📋 `GodModeSectionComponent` (live god name, bid, countdown, overthrow form)
-- 📋 `create-auction-checkout` Edge Function (dynamic Paddle pricing)
-- 📋 pg_cron weekly auction reset (every Sunday 00:00 UTC)
-- 📋 Streak freeze in shop
+- 💡 **Milestone events** — special animation + confetti at 100M, 500M, 1B, 2B, 4B clicks
+- 💡 **"I was click #N"** — toast when you hit a milestone number (1M, 10M, etc.)
+- 💡 **Auto share card** — "I've cracked the egg 847 times. Join me." → Instagram story format
+- 💡 **Easter egg skin** — limited time visual (next Easter)
+- 💡 **Friends leaderboard** — invite code → private group leaderboard
+- 💡 **Country leaderboard map** — world map heatmap of clicks by country today
 
 ---
 
-## Phase 3 — Growth Features 💡 Backlog
+## Phase 5 — Egg #2 Launch Event 💡
+> When Egg #1 cracks — make it a moment
 
-- 💡 **Country Wars** — live map, which country pressed most today
-- 💡 **Team/Color Wars** — assigned team (Red/Blue/Green/Yellow) on first visit
-- 💡 **Milestone events** — special effect when counter hits 1M, 10M, 100M
-- 💡 **Certified Presser** — downloadable certificate for milestone press ($1.99)
-- 💡 **Button Skin Rental** — brands pay $50-200 to change button color for 24h
-- 💡 **Merch** — "I pressed it." t-shirt via Printful (zero inventory)
-- 💡 **Tip jar** — "Buy me a press" custom amount ($1/$5/$10)
-- 💡 **Multiple titles** — Button God, Presser Legend, Chosen One, etc.
+- 💡 Live countdown when egg reaches 99%
+- 💡 Live visitor counter on crack day
+- 💡 Email blast to all registered users
+- 💡 Confetti + crack animation → smaller egg reveal
+- 💡 "Egg #1 Survivor" badge auto-awarded
+- 💡 Automatically create `eggs` row #2 with 3B target
 
 ---
 
 ## Go-Viral Playbook 📋
 
 **Reddit (biggest lever):**
-- Post in: r/mildlyinteresting, r/internetisbeautiful, r/nosurf, r/webdev
-- Title: *"I built a website that does one thing. There's a button. You press it. The counter goes up. That's it."*
+- r/mildlyinteresting: *"I made a website where everyone in the world is cracking one egg. We're at 0. Help."*
+- r/internetisbeautiful
+- r/webdev
 
 **TikTok:**
-- Open site on camera. Press button. Show counter. Say nothing.
-- Caption: *"I made an app that does nothing. Please press it."*
+- Film the egg. Tap it. Show the crack appear. Caption: *"We need 4 billion clicks to crack this egg. Current count: 1."*
 
 **X/Twitter:**
-- *"I spent weeks building a website with one feature. A button. Every time someone presses it the counter goes up. That's it."* + link
+- *"I built a website with one goal: crack an egg. It needs 4,000,000,000 clicks. We just started. Come help."*
+
+**Easter angle:**
+- *"It's Easter. There's an egg. Nobody knows what's inside. Click it."*
 
 ---
 
 ## Tech Debt / Known Issues
-- `dist/` folder is being committed to git (should be in `.gitignore`)
+- `button_presses` + `increment_button` old Supabase objects still exist (harmless, can clean up later)
+- Leaderboard Today/Country tabs currently query same data as All Time — needs dedicated views
 - No error boundary or global error handling in Angular app
-- Supabase anon key is in client-side code (acceptable — it's the public anon key, RLS enforced)
+- Domain still on `the-button-pink.vercel.app`

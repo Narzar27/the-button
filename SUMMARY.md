@@ -1,47 +1,43 @@
-# The Button — Project Summary
+# The Egg 🥚 — Project Summary
 
 **Live at:** https://the-button-pink.vercel.app  
 **Repo:** https://github.com/Narzar27/the-button  
 **Built by:** Nizar · Beirut, Lebanon 🇱🇧  
-**Started:** April 6, 2026  
+**Started:** April 6, 2026 (pivoted April 7, 2026)
 
 ---
 
 ## What It Is
-A website with one feature: a big red button. Every press increments a live global counter visible to everyone in real-time. No purpose. No explanation. Humans cannot resist.
 
-Inspired by Reddit's 2015 "The Button" experiment, the Yo app ($1.5M raised), and the "Nothing" app (Top 10 App Store).
+A global egg that everyone in the world cracks together. Each click adds a crack. The egg has 9 visual crack stages. At 4 billion clicks it fully cracks and a slightly smaller egg appears. Then another. Then another. Nobody knows what's inside the last one.
 
 ---
 
 ## Current State (April 7, 2026)
 
-### Live & Working
-- Big red button with full press animations (flash, shake, ripple, particle burst)
-- Live global counter via Supabase Realtime (updates across all open tabs/browsers instantly)
-- Custom red cursor + lagging ring follower
-- Share button (Web Share API + clipboard fallback)
-- Press rank system: Peasant → Presser → Addict → Legend → God
-- Terms of Service page at `/terms-and-conditions`
-- Vercel auto-deploy on every git push to `main`
+### Live & Working ✅
+- 9-stage SVG egg with crack progression, wiggle animation, particle bursts
+- Live global click counter via Supabase Realtime
+- 10 free clicks per day per visitor (anonymous UUID tracking)
+- Supabase Auth — Google OAuth + email magic link (PKCE flow, `/auth/callback` route)
+- Leaderboard page — real data from Supabase, empty state, 4 tabs
+- Perk Store UI — 10 perks built, Paddle scaffold wired (logs to console)
+- Auth modal — email magic link + Google sign-in
+- Dark space theme — stars, Fredoka One + Nunito, egg-yellow palette
+- Vercel auto-deploy on push to `main`
+- Terms of Service at `/terms-and-conditions`
 
-### Pending
-- Paddle account under review (payment system ready to wire in the moment it's approved)
-- All payment UI code written, planned, and documented — just needs Paddle credentials
+### Needs Supabase Setup (not code — just dashboard actions) 📋
+- Run `supabase/migrations/001_egg_schema.sql` in SQL Editor
+- Run `supabase/migrations/002_user_tracking.sql` in SQL Editor
+- Enable Realtime on `eggs` table
+- Add redirect URL `https://the-button-pink.vercel.app/auth/callback`
 
----
-
-## Monetization Plan
-
-| Feature | Price | Status |
-|---|---|---|
-| 10 Extra Presses | $0.99 | Planned (Plan A) |
-| Unlimited Daily Presses | $2.99/month | Planned (Plan A) |
-| Presser Legend Title | $0.99 | Planned (Plan A) |
-| Streak Freeze | $0.99 | Planned (Plan B) |
-| God Mode Auction | Variable (min $1, weekly) | Planned (Plan B) |
-
-**Payment stack:** Paddle (Merchant of Record) → Payoneer (virtual US account, already set up) → Lebanese USD bank
+### Pending / Blocked ⏳
+- Paddle account under review → perk purchases log to console only
+- Share button not yet built
+- Leaderboard Today/Country tabs not differentiated yet
+- Domain not purchased yet
 
 ---
 
@@ -50,17 +46,45 @@ Inspired by Reddit's 2015 "The Button" experiment, the Yo app ($1.5M raised), an
 ```
 User Browser
     │
-    ├── Angular 19 SPA (Vercel)
-    │       ├── Button press → Supabase RPC (increment_button)
-    │       ├── Counter ← Supabase Realtime subscription
-    │       └── Paddle checkout (when payment added)
+    ├── Angular 19 SPA (Vercel CDN)
+    │       ├── HomeComponent (/): egg + counter + click limit
+    │       ├── LeaderboardComponent (/leaderboard): top crackers
+    │       ├── PerkStoreComponent (/perks): 10 perks, Paddle scaffold
+    │       ├── AuthCallbackComponent (/auth/callback): PKCE exchange
+    │       │
+    │       ├── AnonIdentityService: UUID in localStorage
+    │       ├── ClickLimitService: 10/day limit + extra clicks
+    │       ├── SupabaseService: egg data, realtime, auth, leaderboard
+    │       ├── AuthService: sign-in signals + methods
+    │       └── PaddleService: scaffold (TODO: real checkout)
     │
-    └── Supabase (PostgreSQL + Realtime + Edge Functions)
-            ├── button_presses (global counter)
-            ├── purchases (per-user, keyed by anon UUID)
-            ├── god_mode (auction state)
-            └── Edge Functions (paddle-webhook, create-auction-checkout)
+    └── Supabase (PostgreSQL + Realtime + Auth + Edge Functions)
+            ├── eggs: current egg state (number, target, current_clicks)
+            ├── users: leaderboard (display_name, total_clicks)
+            ├── daily_clicks: anon daily tracking (anon_id, date, count)
+            ├── purchases: payment records (wired after Paddle approval)
+            ├── increment_egg() RPC: atomic click counter
+            └── increment_user_clicks() RPC: per-user leaderboard tracking
 ```
+
+---
+
+## Monetization Plan
+
+| Perk | Price | Status |
+|---|---|---|
+| 10 Extra Clicks | $0.99 | UI built, Paddle pending |
+| 100 Extra Clicks | $4.99 | UI built, Paddle pending |
+| Unlimited 24h | $1.99 | UI built, Paddle pending |
+| Monthly Unlimited | $4.99/mo | UI built, Paddle pending |
+| Name on the Egg | $2.99 | UI built, Paddle pending |
+| Golden Cursor | $1.99 | UI built, Paddle pending |
+| Crack Badge (limited) | $1.99 | UI built, Paddle pending |
+| Hatch Notification | $0.99 | UI built, Paddle pending |
+| Cracker Certificate | $1.99 | UI built, Paddle pending |
+| Diamond Egg Skin | $3.99 | UI built, Paddle pending |
+
+**Payment stack:** Paddle (MoR, 5%) → Payoneer (virtual USD account, set up) → Lebanese USD bank
 
 ---
 
@@ -71,31 +95,17 @@ User Browser
 | Supabase | $0 (free tier) |
 | Vercel | $0 (free tier) |
 | Paddle | $0 + 5% per transaction |
-| Payoneer | $0 (already set up) |
+| Payoneer | $0 (set up) |
 | **Total** | **~$12/year** |
-
----
-
-## Revenue Projection
-If 500K users and 5% pay $1.99/month:
-```
-25,000 × $1.99 = $49,750 MRR
-After Paddle 5%: ~$47,260 net
-```
 
 ---
 
 ## Key Files
 | File | Purpose |
 |---|---|
-| `CLAUDE.md` | Instructions for Claude (dev context, commands, gotchas) |
+| `CLAUDE.md` | Dev context, commands, architecture, gotchas |
 | `ROADMAP.md` | Feature phases, status, backlog |
 | `SUMMARY.md` | This file — project overview |
-| `PLAN.md` | Current sprint tracking |
-| `docs/superpowers/specs/2026-04-06-payment-system-design.md` | Full payment system design |
-| `docs/superpowers/plans/2026-04-07-plan-a-core-payment.md` | Implementation plan: press limits + Paddle |
-| `docs/superpowers/plans/2026-04-07-plan-b-streak-godmode.md` | Implementation plan: streaks + God Mode |
-| `supabase-setup.sql` | Initial DB schema (run once) |
-| `supabase-payments-setup.sql` | Payments schema (run for Plan A) |
-| `supabase-godmode-setup.sql` | God Mode schema (run for Plan B) |
-| `vercel.json` | Vercel build config (uses node to invoke ng) |
+| `PLAN.md` | Current sprint tracking + next steps |
+| `supabase/migrations/001_egg_schema.sql` | Core schema: eggs, users, daily_clicks, purchases, RPCs |
+| `supabase/migrations/002_user_tracking.sql` | User auto-creation trigger + increment_user_clicks RPC |

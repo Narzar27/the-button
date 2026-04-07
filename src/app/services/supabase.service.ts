@@ -135,9 +135,16 @@ export class SupabaseService {
   async signInWithGoogle(): Promise<void> {
     const { error } = await this.client.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
     if (error) throw error;
+  }
+
+  async incrementUserClicks(): Promise<void> {
+    const user = this.currentUser();
+    if (!user) return;
+    const { error } = await this.client.rpc('increment_user_clicks', { uid: user.id });
+    if (error) console.error('increment_user_clicks failed:', error.message);
   }
 
   async signOut(): Promise<void> {
