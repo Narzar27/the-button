@@ -3,29 +3,25 @@
 ## Project
 Global egg-cracking web app. One egg, 4 billion clicks, everyone in the world together.
 Nobody knows what's inside the last one.
-Built by Nizar (Beirut, Lebanon 🇱🇧). Solo project, $15 budget, global ambitions.
+Built by Nizar (Beirut, Lebanon 🇱🇧). Solo project, ~$12/year cost, global ambitions.
 
 ## Stack
 - **Framework:** Angular 19 standalone components, signals-based reactivity
 - **Styling:** Tailwind CSS v3 + custom CSS in `src/styles.css` (Fredoka One + Nunito fonts)
 - **Database:** Supabase (PostgreSQL) at `bxsrcjyguitmkrkqtxdn.supabase.co`
 - **Realtime:** Supabase Realtime (subscribed to `eggs` table)
-- **Auth:** Supabase Auth — Google OAuth + email magic link
-- **Payments:** Paddle Billing (awaiting account approval — scaffolded in PaddleService)
+- **Auth:** Supabase Auth — Google OAuth + email magic link (PKCE, `/auth/callback` route)
+- **Payments:** Paddle Billing — live token wired, 5 price IDs set, awaiting account approval
 - **Hosting:** Vercel — auto-deploys on push to `main`
-- **Repo:** https://github.com/Narzar27/the-button
 
 ## Build Commands
 ```bash
 # Dev server
 npm start   # → http://localhost:4200
 
-# Build (use this, not `ng build` directly)
+# Build
 node ./node_modules/@angular/cli/bin/ng.js build --configuration development
 node ./node_modules/@angular/cli/bin/ng.js build --configuration production
-
-# Deploy
-git push    # Vercel auto-deploys from main
 ```
 
 ## Project Structure
@@ -33,66 +29,67 @@ git push    # Vercel auto-deploys from main
 src/
   app/
     pages/
-      home/           ← main egg page (HomeComponent)
-      leaderboard/    ← /leaderboard
-      perks/          ← /perks (PerkStoreComponent)
-      terms/          ← /terms-and-conditions
+      home/              ← egg, counter, click button, stats (HomeComponent)
+      leaderboard/       ← /leaderboard (LeaderboardComponent)
+      perks/             ← /perks (PerkStoreComponent)
+      auth-callback/     ← /auth/callback — PKCE code exchange then → /
+      terms/             ← /terms-and-conditions
     components/
-      egg/            ← EggComponent — SVG egg with 9 crack stages
-      nav/            ← NavComponent — header + tabs
-      auth-modal/     ← AuthModalComponent — email + Google sign in
+      egg/               ← EggComponent — SVG egg, 9 crack stages, input: [stage] [size]
+      nav/               ← NavComponent — header logo + router tabs + user pill
+      auth-modal/        ← AuthModalComponent — email magic link + Google sign-in
     services/
-      supabase.service.ts       ← Supabase client + egg data + auth methods
-      anon-identity.service.ts  ← UUID in localStorage (egg_anon_id)
-      click-limit.service.ts    ← daily click tracking (10/day, extra clicks)
-      paddle.service.ts         ← Paddle scaffold (openCheckout logs to console)
-      auth.service.ts           ← wraps Supabase Auth, exposes signals
+      supabase.service.ts       ← Supabase client + egg signals + realtime + auth + leaderboard
+      anon-identity.service.ts  ← UUID in localStorage (key: egg_anon_id)
+      click-limit.service.ts    ← 10/day free + extra clicks (localStorage + Supabase sync)
+      paddle.service.ts         ← Lazy loads Paddle.js, openCheckout(priceId)
+      auth.service.ts           ← Wraps Supabase Auth, exposes isSignedIn/displayName signals
   environments/
-    environment.ts       ← Supabase credentials
-    environment.prod.ts  ← same
-  styles.css             ← global styles, egg theme, animations
+    environment.ts       ← DEV: sandbox=true, test token placeholder
+    environment.prod.ts  ← PROD: live token + 5 real price IDs wired
+  styles.css             ← Global styles + egg theme + all animations
 ```
 
-## Key Design Decisions
-- **Anon identity** — UUID in localStorage (`egg_anon_id`) used for daily click tracking
-- **Daily limit** — 10 free clicks/day, tracked locally + synced to Supabase `daily_clicks`
-- **Extra clicks** — stored in localStorage (`egg_extra_clicks`), added via Paddle purchases (wired later)
-- **Realtime** — Supabase Realtime on `eggs` table, optimistic local updates on click
-- **Paddle** — scaffold only; `PaddleService.openCheckout()` logs to console until account approved
+## Key Signals & Data Flow
+- `SupabaseService.egg` — signal<Egg> updated by Realtime + optimistic on click
+- `SupabaseService.crackStage` — computed (0–8) from egg.current_clicks / target
+- `SupabaseService.progressPct` — computed % toward 4B
+- `ClickLimitService.totalRemaining` — computed free + extra clicks left today
+- `AuthService.isSignedIn` / `displayName` / `initials` — computed from Supabase auth state
 
 ## Supabase Tables
 | Table | Purpose |
 |---|---|
 | `eggs` | Current egg — number, target_clicks, current_clicks, cracked_at |
-| `users` | Authenticated users — id, display_name, total_clicks |
-| `daily_clicks` | Per-anon daily click counts — anon_id, date, click_count |
-| `purchases` | Payment records — anon_id, user_id, product_type, quantity |
+| `users` | Leaderboard — id (auth.users FK), display_name, total_clicks |
+| `daily_clicks` | Anon daily tracking — anon_id, date, click_count |
+| `purchases` | Payment records — wired after Paddle webhook done |
 
-## RPC Functions
+## RPCs
 | Function | Purpose |
 |---|---|
-| `increment_egg(amount)` | Atomic egg click counter increment |
+| `increment_egg(amount)` | Atomic egg counter increment |
+| `increment_user_clicks(uid)` | Increment total_clicks for signed-in user |
 
-## Supabase SQL to run (one-time setup)
-See `supabase/migrations/001_egg_schema.sql` — run this in Supabase SQL editor.
+## Supabase Setup Checklist (one-time)
+- [ ] Run `supabase/migrations/001_egg_schema.sql`
+- [ ] Run `supabase/migrations/002_user_tracking.sql`
+- [ ] Enable Realtime on `eggs` table: Dashboard → Database → Publications → supabase_realtime
+- [ ] Add redirect URLs: Auth → URL Configuration:
+  - `https://the-button-pink.vercel.app/auth/callback`
+  - `http://localhost:4200/auth/callback`
 
-## Design / Theme
-- Background: dark navy gradient (`#1a1a2e → #16213e → #0f3460`) with star particles
-- Primary: egg yellow `#FFD93D`, accent: orange `#FF9F1C`
-- Fonts: `Fredoka One` (headings/counters), `Nunito` (body)
-- Egg: 9 SVG crack stages (0 = pristine, 8 = barely holding together)
-- Animations: egg-wiggle on click, egg-crack-flash on stage change, floating +1 indicators
+## Paddle Status
+- Live token: `live_b6242a1fd4e7644a52e6097a54a` (in environment.prod.ts)
+- Account: under review — checkout logs to console in dev, will work in prod once approved
+- 5 price IDs set (clicks10, clicks100, unlimited24h, unlimitedMonth, nameOnEgg)
+- 5 remaining products still need creating (goldenCursor, crackBadge, hatchNotif, certificate, diamondSkin)
+- After approval: set `sandbox: false` in environment.ts, deploy paddle-webhook Edge Function
 
 ## Gotchas
 - Build with `node ./node_modules/@angular/cli/bin/ng.js build` not `npx ng build`
 - Vercel output dir: `dist/the-button/browser`
-- Supabase Realtime must be enabled per-table in Dashboard → Database → Publications → `supabase_realtime` (enable the `eggs` table)
+- Supabase Realtime must be enabled per-table in the dashboard (not via SQL)
 - `dist/` is in `.gitignore`
-- Tailwind `/` opacity classes work in templates but NOT in `[class.text-white/50]` bindings
-
-## Paddle (pending)
-Once Paddle account is approved:
-1. Create products in Paddle dashboard
-2. Add price IDs to `environment.ts` under `paddle.prices`
-3. Replace console.log in `PaddleService.openCheckout()` with real Paddle.js checkout call
-4. Deploy Supabase Edge Function `paddle-webhook` to unlock purchases
+- Dev environment has `sandbox: true` — checkout won't fire real payments locally
+- Tailwind opacity slash syntax (e.g. `text-white/50`) doesn't work in Angular `[class]` bindings

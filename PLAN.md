@@ -4,109 +4,82 @@ _Updated: April 7, 2026_
 
 ---
 
-## Status: MVP Live, Supabase wiring pending ✅ / 📋
+## Status: Code complete. Blocked on Supabase setup + Paddle approval.
 
-The Angular app is fully built and deployed. The remaining blockers are all Supabase dashboard actions (not code) and Paddle approval.
+Everything is built and deployed. Nothing left to code right now.
+All remaining items are either dashboard actions or waiting on Paddle.
 
 ---
 
-## Immediate Next Steps (in order)
+## Supabase Setup ✅ Done
 
-### 1. Run Supabase migrations (now)
-- [ ] Open Supabase Dashboard → SQL Editor
-- [ ] Run `supabase/migrations/001_egg_schema.sql`
-- [ ] Run `supabase/migrations/002_user_tracking.sql`
+- [x] SQL Editor → ran `001_egg_schema.sql`
+- [x] SQL Editor → ran `002_user_tracking.sql`
+- [x] Realtime enabled on `eggs` table
+- [x] Auth redirect URLs added
 
-### 2. Enable Realtime on eggs table (now)
-- [ ] Supabase Dashboard → Database → Publications → `supabase_realtime`
-- [ ] Toggle on the `eggs` table
-- [ ] Save
+---
 
-### 3. Fix redirect URLs (now)
-- [ ] Supabase Dashboard → Auth → URL Configuration → Redirect URLs
-- [ ] Add `https://the-button-pink.vercel.app/auth/callback`
-- [ ] Add `http://localhost:4200/auth/callback`
+## Do Before Viral Push — Polish (~2–3h of code)
 
-### 4. Phase 2 polish tasks (before viral push)
-- [ ] **Share button** — add "Share" button to HomeComponent (Web Share API + clipboard fallback)
-- [ ] **Today leaderboard tab** — query `daily_clicks` table for today's top crackers
-- [ ] **Mobile test** — open on iOS Safari, check egg tap, layout, modals
-- [ ] **OG image** — add a proper `og:image` meta tag (egg screenshot or simple generated card)
-- [ ] **Domain** — buy `theegg.app` or `crackit.app`, point to Vercel (~$12)
+- [ ] **Share button** on home page
+  - "I've cracked the egg X times. Join me." + link
+  - Web Share API with clipboard fallback (same pattern as the old Button)
+- [ ] **Leaderboard Today tab** — query `daily_clicks` table instead of `users.total_clicks`
+- [ ] **Mobile test** — open on phone, check egg tap, layout, modals, auth flow
+- [ ] **OG image** — add `og:image` meta tag (a screenshot or simple egg card)
+- [ ] **Domain** — buy `theegg.app` or `crackit.app` (~$12), point to Vercel
 
-### 5. When Paddle approves (blocked)
-- [ ] Log into Paddle Dashboard → create 10 products from ROADMAP.md list
-- [ ] Copy all `pri_...` price IDs
-- [ ] Add to `src/environments/environment.ts`:
-  ```ts
-  paddle: {
-    clientToken: 'live_...',
-    prices: {
-      clicks10: 'pri_...',
-      clicks100: 'pri_...',
-      unlimited24h: 'pri_...',
-      unlimitedMonth: 'pri_...',
-      nameOnEgg: 'pri_...',
-      goldenCursor: 'pri_...',
-      crackBadge: 'pri_...',
-      hatchNotif: 'pri_...',
-      certificate: 'pri_...',
-      diamondSkin: 'pri_...',
-    }
-  }
-  ```
-- [ ] Wire real Paddle.js in `PaddleService`:
-  - Load `https://cdn.paddle.com/paddle/v2/paddle.js` lazily
-  - Call `Paddle.Setup({ token: environment.paddle.clientToken })`
-  - Replace `console.log` in `openCheckout()` with `Paddle.Checkout.open(...)`
-- [ ] Deploy `paddle-webhook` Supabase Edge Function
-- [ ] Register webhook URL in Paddle dashboard
+---
 
-### 6. Go viral (after Polish + domain)
-- [ ] Post on Reddit: r/mildlyinteresting, r/internetisbeautiful, r/webdev
-- [ ] Post on TikTok: crack the egg on camera
-- [ ] Post on X: one tweet + link
+## When Paddle Approves — (~1h of code)
+
+- [ ] In `environment.ts`: set `sandbox: false`, replace token with live `live_b6242a1fd4e7644a52e6097a54a`
+- [ ] Create remaining 5 products in Paddle dashboard:
+  - Golden Cursor $1.99
+  - Crack Badge $1.99 (limited)
+  - Hatch Notification $0.99
+  - Cracker Certificate $1.99
+  - Diamond Egg Skin $3.99
+- [ ] Paste their `pri_` IDs into both `environment.ts` files
+- [ ] Build + deploy `paddle-webhook` Supabase Edge Function
+- [ ] Register webhook in Paddle → Notifications
+
+---
+
+## Go Viral — When polish + domain done
+
+- [ ] Reddit: r/mildlyinteresting, r/internetisbeautiful, r/webdev
+- [ ] TikTok: crack the egg on camera
+- [ ] X: one tweet + link
+- [ ] Easter angle (April 20 is the window)
 
 ---
 
 ## Completed ✅
 
-- [x] The Button MVP (Angular 19 + Supabase Realtime + Vercel)
-- [x] Pivoted concept to The Egg
-- [x] Full Angular refactor — all components, services, pages
-- [x] 9-stage SVG egg with wiggle/flash/particle animations
-- [x] Global click counter via Supabase Realtime
-- [x] 10 free clicks/day (AnonIdentityService + ClickLimitService)
-- [x] Supabase Auth — Google OAuth + email magic link
-- [x] Auth callback route (PKCE flow)
-- [x] Leaderboard page (real data, empty state, 4 tabs)
-- [x] Perk Store UI (10 perks, Paddle scaffold)
-- [x] AuthModal (email + Google)
-- [x] Dark space theme (stars, Fredoka One + Nunito)
-- [x] Supabase SQL migrations written (001 + 002)
-- [x] User auto-creation trigger + click tracking SQL written
-- [x] CLAUDE.md, ROADMAP.md, SUMMARY.md, PLAN.md updated
-- [x] Payoneer account set up
-- [x] Paddle account applied (under review)
+- [x] Full Angular rebuild (The Button → The Egg)
+- [x] 9-stage SVG egg + all animations
+- [x] Supabase Realtime counter
+- [x] 10 free clicks/day (anon UUID tracking)
+- [x] Google OAuth + email magic link auth
+- [x] Auth callback route (PKCE)
+- [x] Leaderboard (real data, empty state)
+- [x] Perk Store UI (10 perks)
+- [x] PaddleService (real Paddle.js, lazy load)
+- [x] Paddle live token wired (`environment.prod.ts`)
+- [x] 5 live price IDs wired
+- [x] Supabase SQL migrations written
+- [x] User auto-creation trigger written
+- [x] CLAUDE.md / ROADMAP.md / PLAN.md updated
+- [x] Payoneer set up
+- [x] Vercel auto-deploy on push
 
 ---
 
-## Blocked / Waiting
-| Item | Waiting on | ETA |
-|---|---|---|
-| Real Paddle checkout | Paddle account approval | 1–5 business days |
-| Supabase setup complete | You run the SQL + dashboard steps | Now |
-| Domain | Your decision on name | — |
-
----
-
-## Decisions Log
-| Date | Decision | Reason |
-|---|---|---|
-| Apr 6 | Paddle over Stripe | Lebanese individuals can't create Stripe accounts |
-| Apr 6 | Payoneer as payout | Best option for Lebanese USD bank transfer |
-| Apr 7 | Pivoted to The Egg | Better virality mechanics, more shareable concept |
-| Apr 7 | 10 free clicks/day | Low enough to create FOMO, high enough to feel generous |
-| Apr 7 | Anonymous UUID tracking | No auth friction for basic clicking |
-| Apr 7 | Leaderboard requires sign-in | Incentivizes auth without forcing it |
-| Apr 7 | Extra clicks stored in localStorage | Simple, no server needed for non-paying users |
+## Blocked
+| Item | Waiting on |
+|---|---|
+| Real Paddle checkout | Account approval |
+| Remaining 5 perk price IDs | Create products in Paddle |
+| Supabase fully wired | You run the SQL + dashboard steps above |
