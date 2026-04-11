@@ -20,7 +20,7 @@ import { RouterLink } from '@angular/router';
         <p>All users receive 10 free clicks per day. Daily limits reset at midnight UTC. Anonymous users are tracked by a UUID stored in localStorage. We do not store personally identifiable information for anonymous users.</p>
 
         <h2>3. Purchases</h2>
-        <p>Extra click packs and perks are available for purchase via Paddle (our Merchant of Record). Paddle handles all payments, VAT, and refunds in accordance with their terms. All purchases are final unless required otherwise by law in your jurisdiction.</p>
+        <p>Extra click packs and perks are available for purchase via Lemon Squeezy (our Merchant of Record). Lemon Squeezy handles all payments, VAT, and refunds in accordance with their terms. All purchases are final unless required otherwise by law in your jurisdiction.</p>
 
         <h2>4. Leaderboard</h2>
         <p>To appear on the leaderboard, you must sign in with a valid email or Google account. Your display name and click count are public. You may not use offensive, impersonating, or misleading display names.</p>

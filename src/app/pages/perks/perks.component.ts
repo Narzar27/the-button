@@ -1,12 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { PaddleService } from '../../services/paddle.service';
+import { LemonSqueezyService } from '../../services/lemon-squeezy.service';
 import { AuthModalComponent } from '../../components/auth-modal/auth-modal.component';
 import { environment } from '../../../environments/environment';
 
 interface Perk {
   id: number;
-  priceId: string;
+  variantId: string;
   icon: string;
   name: string;
   desc: string;
@@ -15,19 +15,19 @@ interface Perk {
   limited: boolean;
 }
 
-const p = environment.paddle.prices;
+const v = environment.lemonSqueezy.variants;
 
 const PERKS: Perk[] = [
-  { id: 1,  priceId: p.clicks10,        icon: '⚡', name: '10 Extra Clicks',          desc: 'Get 10 bonus clicks right now',                     price: '$0.99',    type: 'one-time',     limited: false },
-  { id: 2,  priceId: p.clicks100,       icon: '💯', name: '100 Extra Clicks',         desc: 'Get 100 bonus clicks — go wild',                    price: '$4.99',    type: 'one-time',     limited: false },
-  { id: 3,  priceId: p.unlimited24h,    icon: '🌙', name: 'Unlimited 24h',            desc: 'Click as much as you want for 24 hours',           price: '$1.99',    type: 'one-time',     limited: false },
-  { id: 4,  priceId: p.unlimitedMonth,   icon: '♾️', name: 'Monthly Unlimited',        desc: 'Unlimited clicks every day this month',            price: '$4.99/mo', type: 'subscription', limited: false },
-  { id: 5,  priceId: p.crackBadge,      icon: '🏅', name: '"I Cracked Egg #1"',       desc: 'Exclusive badge for Egg #1 crackers only',        price: '$1.99',    type: 'one-time',     limited: true  },
-  { id: 6,  priceId: p.nameOnEgg,       icon: '👑', name: 'Name on the Egg',          desc: 'Your name scrolls across the egg forever',        price: '$2.99',    type: 'one-time',     limited: false },
-  { id: 7,  priceId: p.hatchNotif,      icon: '🔔', name: 'Hatch Notification',       desc: 'Front row alert when the egg finally cracks',     price: '$0.99',    type: 'one-time',     limited: false },
-  { id: 8,  priceId: p.certificate,     icon: '📜', name: 'Cracker Certificate',      desc: 'Official downloadable PDF certificate',           price: '$1.99',    type: 'one-time',     limited: false },
-  { id: 9,  priceId: p.goldenCursor,    icon: '✨', name: 'Golden Cursor',            desc: 'Your cursor glows gold while clicking',           price: '$1.99',    type: 'one-time',     limited: false },
-  { id: 10, priceId: p.diamondSkin,     icon: '💎', name: 'Diamond Egg Skin',         desc: 'The egg shimmers with diamonds for you',          price: '$3.99',    type: 'one-time',     limited: false },
+  { id: 1,  variantId: v.clicks10,       icon: '⚡', name: '10 Extra Clicks',     desc: 'Get 10 bonus clicks right now',                   price: '$0.99',    type: 'one-time',     limited: false },
+  { id: 2,  variantId: v.clicks100,      icon: '💯', name: '100 Extra Clicks',    desc: 'Get 100 bonus clicks — go wild',                  price: '$4.99',    type: 'one-time',     limited: false },
+  { id: 3,  variantId: v.unlimited24h,   icon: '🌙', name: 'Unlimited 24h',       desc: 'Click as much as you want for 24 hours',         price: '$1.99',    type: 'one-time',     limited: false },
+  { id: 4,  variantId: v.unlimitedMonth, icon: '♾️', name: 'Monthly Unlimited',   desc: 'Unlimited clicks every day this month',          price: '$4.99/mo', type: 'subscription', limited: false },
+  { id: 5,  variantId: v.crackBadge,     icon: '🏅', name: '"I Cracked Egg #1"', desc: 'Exclusive badge for Egg #1 crackers only',       price: '$1.99',    type: 'one-time',     limited: true  },
+  { id: 6,  variantId: v.nameOnEgg,      icon: '👑', name: 'Name on the Egg',    desc: 'Your name scrolls across the egg forever',       price: '$2.99',    type: 'one-time',     limited: false },
+  { id: 7,  variantId: v.hatchNotif,     icon: '🔔', name: 'Hatch Notification', desc: 'Front row alert when the egg finally cracks',    price: '$0.99',    type: 'one-time',     limited: false },
+  { id: 8,  variantId: v.certificate,    icon: '📜', name: 'Cracker Certificate',desc: 'Official downloadable PDF certificate',          price: '$1.99',    type: 'one-time',     limited: false },
+  { id: 9,  variantId: v.goldenCursor,   icon: '✨', name: 'Golden Cursor',      desc: 'Your cursor glows gold while clicking',          price: '$1.99',    type: 'one-time',     limited: false },
+  { id: 10, variantId: v.diamondSkin,    icon: '💎', name: 'Diamond Egg Skin',   desc: 'The egg shimmers with diamonds for you',         price: '$3.99',    type: 'one-time',     limited: false },
 ];
 
 @Component({
@@ -79,7 +79,7 @@ const PERKS: Perk[] = [
       </div>
 
       <div class="perks-footer">
-        Payments powered by Paddle · Secure & global · VAT handled automatically
+        Payments powered by Lemon Squeezy · Secure & global · VAT handled automatically
       </div>
     </div>
   `,
@@ -98,7 +98,7 @@ const PERKS: Perk[] = [
 })
 export class PerkStoreComponent {
   readonly auth = inject(AuthService);
-  readonly paddle = inject(PaddleService);
+  readonly ls = inject(LemonSqueezyService);
 
   readonly perks = PERKS;
   readonly showAuthModal = signal(false);
@@ -116,8 +116,7 @@ export class PerkStoreComponent {
       this.showAuthModal.set(true);
       return;
     }
-    // TODO: Wire Paddle.js checkout once account is approved
-    this.paddle.openCheckout(perk.priceId);
+    this.ls.openCheckout(perk.variantId);
     this.showToast(`🛒 Opening checkout for "${perk.name}"…`);
   }
 

@@ -17,6 +17,8 @@ export class AuthService {
       ?? 'Cracker';
   });
 
+  readonly userEmail = computed(() => this.supabase.currentUser()?.email ?? null);
+
   readonly initials = computed(() => {
     const name = this.displayName();
     if (!name) return '??';
