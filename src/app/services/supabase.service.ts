@@ -47,6 +47,7 @@ export class SupabaseService {
   readonly eggNumber = computed(() => this.egg()?.number ?? 1);
 
   private channel: any = null;
+  private syncTimer: any = null;
 
   constructor() {
     this.client = createClient(environment.supabase.url, environment.supabase.anonKey);
@@ -85,23 +86,28 @@ export class SupabaseService {
 
   subscribeToEggClicks(): void {
     if (this.channel) this.client.removeChannel(this.channel);
+    clearInterval(this.syncTimer);
 
-    const eggId = this.egg()?.id ?? 1;
+    // Broadcast channel — all users share one connection instead of N postgres_changes listeners
     this.channel = this.client
-      .channel('egg_realtime')
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'eggs', filter: `id=eq.${eggId}` },
-        (payload: any) => {
-          this.egg.update(e => e ? { ...e, current_clicks: payload.new.current_clicks } : e);
-        }
-      )
+      .channel('egg_global', { config: { broadcast: { self: false } } })
+      .on('broadcast', { event: 'click' }, () => {
+        this.egg.update(e => e ? { ...e, current_clicks: e.current_clicks + 1 } : e);
+      })
       .subscribe((status: string) => this.isConnected.set(status === 'SUBSCRIBED'));
+
+    // Resync from DB every 60s to correct any drift
+    this.syncTimer = setInterval(() => this.loadEgg(), 60_000);
+  }
+
+  private broadcastClick(): void {
+    this.channel?.send({ type: 'broadcast', event: 'click', payload: {} });
   }
 
   async incrementEgg(): Promise<void> {
     const { error } = await this.client.rpc('increment_egg', { amount: 1 });
     if (error) throw error;
+    this.broadcastClick();
   }
 
   async syncDailyClick(anonId: string, date: string, count: number): Promise<void> {
@@ -181,5 +187,6 @@ export class SupabaseService {
 
   ngOnDestroy(): void {
     if (this.channel) this.client.removeChannel(this.channel);
+    clearInterval(this.syncTimer);
   }
 }
