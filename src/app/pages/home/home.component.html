@@ -3,6 +3,7 @@
   @for (s of stars; track trackStar($index, s)) {
     <div class="star" [style.left.%]="s.x" [style.top.%]="s.y"
          [style.width.px]="s.size" [style.height.px]="s.size"
+         [style.background]="s.color"
          [style.animation-duration.s]="s.duration"
          [style.animation-delay.s]="s.delay"></div>
   }

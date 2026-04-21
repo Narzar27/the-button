@@ -10,7 +10,7 @@ import { EggComponent } from '../../components/egg/egg.component';
 
 interface Floater { id: number; x: number; y: number; }
 interface Particle { id: number; x: number; y: number; tx: string; ty: string; rot: string; color: string; size: number; dur: number; }
-interface Star { id: number; x: number; y: number; size: number; duration: number; delay: number; }
+interface Star { id: number; x: number; y: number; size: number; duration: number; delay: number; color: string; }
 
 let floaterId = 0;
 let particleId = 0;
@@ -47,7 +47,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ));
 
   constructor() {
-    // Generate stars on construction (consistent set)
+    const easterColors = ['#FFB7C5','#B5EAD7','#C7CEEA','#FFDAC1','#FFD93D','#D4EDBC','#E8C5FF','#AEE6FF'];
     for (let i = 0; i < 60; i++) {
       this.stars.push({
         id: i,
@@ -56,6 +56,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         size: 1 + Math.random() * 2.5,
         duration: 2 + Math.random() * 4,
         delay: Math.random() * 4,
+        color: easterColors[Math.floor(Math.random() * easterColors.length)],
       });
     }
   }

@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, signal, computed, inject, PLATFORM_ID, effect } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { AnonIdentityService } from './anon-identity.service';
 import { SupabaseService } from './supabase.service';
@@ -8,6 +8,10 @@ const EXTRA_CLICKS_KEY = 'egg_extra_clicks';
 
 function todayKey(): string {
   return `egg_daily_${new Date().toISOString().split('T')[0]}`;
+}
+
+function todayDate(): string {
+  return new Date().toISOString().split('T')[0];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -28,14 +32,30 @@ export class ClickLimitService {
   constructor() {
     if (!isPlatformBrowser(this.platformId)) return;
     this.loadFromStorage();
+
+    // When a user signs in, pull their server click count so it syncs across devices
+    effect(() => {
+      const user = this.supabase.currentUser();
+      if (user) {
+        this.syncFromServer(user.id);
+      }
+    });
   }
 
   private loadFromStorage(): void {
     const daily = parseInt(localStorage.getItem(todayKey()) ?? '0', 10);
     this._dailyClicks.set(daily);
-
     const extra = parseInt(localStorage.getItem(EXTRA_CLICKS_KEY) ?? '0', 10);
     this._extraClicks.set(extra);
+  }
+
+  private async syncFromServer(userId: string): Promise<void> {
+    const serverCount = await this.supabase.getDailyClicks(userId, todayDate());
+    // Take the higher of local vs server (never reset clicks the user already spent)
+    if (serverCount > this._dailyClicks()) {
+      this._dailyClicks.set(serverCount);
+      localStorage.setItem(todayKey(), String(serverCount));
+    }
   }
 
   canClick(): boolean {
@@ -53,18 +73,17 @@ export class ClickLimitService {
   async registerClick(): Promise<boolean> {
     if (!this.canClick()) return false;
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = todayDate();
+    const userId = this.supabase.currentUser()?.id;
+    const syncId = userId ?? this.anon.anonId();
 
     if (this.remainingFree() > 0) {
       const newCount = this._dailyClicks() + 1;
       this._dailyClicks.set(newCount);
       localStorage.setItem(todayKey(), String(newCount));
-
-      // Fire-and-forget syncs
-      this.supabase.syncDailyClick(this.anon.anonId(), today, newCount).catch(console.error);
+      this.supabase.syncDailyClick(syncId, today, newCount).catch(console.error);
       this.supabase.incrementUserClicks().catch(console.error);
     } else {
-      // Consume an extra click
       const newExtra = Math.max(0, this._extraClicks() - 1);
       this._extraClicks.set(newExtra);
       localStorage.setItem(EXTRA_CLICKS_KEY, String(newExtra));

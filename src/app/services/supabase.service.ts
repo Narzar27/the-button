@@ -161,6 +161,16 @@ export class SupabaseService {
     if (error) console.error('increment_user_clicks failed:', error.message);
   }
 
+  async getDailyClicks(userId: string, date: string): Promise<number> {
+    const { data } = await this.client
+      .from('daily_clicks')
+      .select('click_count')
+      .eq('anon_id', userId)
+      .eq('date', date)
+      .maybeSingle();
+    return data?.click_count ?? 0;
+  }
+
   async signOut(): Promise<void> {
     await this.client.auth.signOut();
   }
