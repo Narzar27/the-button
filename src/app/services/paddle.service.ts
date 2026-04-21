@@ -1,12 +1,14 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../environments/environment';
+import { SupabaseService } from './supabase.service';
 
 declare const Paddle: any;
 
 @Injectable({ providedIn: 'root' })
 export class PaddleService {
   private platformId = inject(PLATFORM_ID);
+  private supabase = inject(SupabaseService);
   private _loaded = false;
   private _loading = false;
 
@@ -24,8 +26,11 @@ export class PaddleService {
 
     await this.load();
 
+    const userId = this.supabase.currentUser()?.id ?? null;
+
     Paddle.Checkout.open({
       items: [{ priceId, quantity: 1 }],
+      customData: userId ? { user_id: userId } : undefined,
     });
   }
 

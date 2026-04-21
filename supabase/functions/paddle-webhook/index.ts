@@ -4,12 +4,12 @@ const PADDLE_WEBHOOK_SECRET = Deno.env.get('PADDLE_WEBHOOK_SECRET')!;
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-// Click amounts per price ID
+// Click amounts per price ID (-1 = unlimited24h, -2 = unlimitedMonth, handled client-side)
 const CLICK_GRANTS: Record<string, number> = {
-  pri_01knkm1txrj4apeh0tcx4m0p7f: 10,       // clicks10
-  pri_01knkm331exk8fjyc7hgwbndrd: 100,      // clicks100
-  pri_01knkm48htnz5qjxr3w1ds0j6w: -1,       // unlimited24h  (-1 = special flag)
-  pri_01knkm506r192ejfp1gajq67aw: -2,        // unlimitedMonth (-2 = special flag)
+  pri_01knkm1txrj4apeh0tcx4m0p7f: 10,   // clicks10
+  pri_01knkm331exk8fjyc7hgwbndrd: 100,  // clicks100
+  pri_01knkm48htnz5qjxr3w1ds0j6w: -1,   // unlimited24h
+  pri_01knkm506r192ejfp1gajq67aw: -2,   // unlimitedMonth
 };
 
 Deno.serve(async (req) => {

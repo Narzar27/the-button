@@ -13,11 +13,9 @@ export const environment = {
       unlimited24h:    'pri_01knkm48htnz5qjxr3w1ds0j6w',  // Unlimited 24h — $1.99
       unlimitedMonth:  'pri_01knkm506r192ejfp1gajq67aw',  // Monthly Unlimited — $4.99/mo
       nameOnEgg:       'pri_01knkm5je3xarr8crc5fbtamka',  // Name on the Egg — $2.99
-      goldenCursor:    'pri_REPLACE_ME', // Golden Cursor — $1.99 (create in Paddle)
-      crackBadge:      'pri_REPLACE_ME', // Crack Badge (limited) — $1.99 (create in Paddle)
-      hatchNotif:      'pri_REPLACE_ME', // Hatch Notification — $0.99 (create in Paddle)
-      certificate:     'pri_REPLACE_ME', // Cracker Certificate — $1.99 (create in Paddle)
-      diamondSkin:     'pri_REPLACE_ME', // Diamond Egg Skin — $3.99 (create in Paddle)
+      goldenCursor:    'pri_01kpqk5ccxs3yreysrv53m0pf5', // Golden Cursor — $1.99
+      crackBadge:      'pri_01kpqk6zz6kgh2vepepk59aqwz', // Crack Badge (limited) — $1.99
+      diamondSkin:     'pri_01kpqk8t53a836f29bnp3rpwce', // Diamond Egg Skin — $3.99
     },
   },
 };
