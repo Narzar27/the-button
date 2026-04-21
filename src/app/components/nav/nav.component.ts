@@ -1,11 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { AuthModalComponent } from '../auth-modal/auth-modal.component';
 
 @Component({
   selector: 'app-nav',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, AuthModalComponent],
   template: `
     <header class="nav-header">
       <a routerLink="/" class="logo">The <span>Egg</span> 🥚</a>
@@ -34,6 +35,10 @@ import { AuthService } from '../../services/auth.service';
         ⚡ Perk Store
       </a>
     </nav>
+
+    @if (showAuthModal()) {
+      <app-auth-modal (closed)="showAuthModal.set(false)" />
+    }
   `,
   styles: [`
     .nav-header {

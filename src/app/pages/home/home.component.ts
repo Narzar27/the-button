@@ -68,6 +68,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   async onEggClick(event: MouseEvent | TouchEvent): Promise<void> {
+    if (event instanceof TouchEvent) {
+      event.preventDefault(); // blocks the synthetic click that follows touchend
+    }
+
     if (!this.clickLimit.canClick()) {
       this.showToast('⚡ Daily limit reached! Get more clicks in the store.');
       return;

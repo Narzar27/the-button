@@ -21,9 +21,12 @@ export class AuthCallbackComponent implements OnInit {
   private supabase = inject(SupabaseService);
 
   async ngOnInit(): Promise<void> {
-    // Supabase JS client automatically exchanges the ?code= param for a session.
-    // Calling getSession() triggers that exchange.
-    await this.supabase.client.auth.getSession();
+    const code = new URL(window.location.href).searchParams.get('code');
+    if (code) {
+      await this.supabase.client.auth.exchangeCodeForSession(code);
+    } else {
+      await this.supabase.client.auth.getSession();
+    }
     this.router.navigate(['/'], { replaceUrl: true });
   }
 }
