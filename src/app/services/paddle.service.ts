@@ -30,14 +30,13 @@ export class PaddleService {
 
     Paddle.Checkout.open({
       items: [{ priceId, quantity: 1 }],
-      customData: userId ? { user_id: userId } : undefined,
+      customData: userId ? { userId } : undefined,
     });
   }
 
   private async load(): Promise<void> {
     if (this._loaded) return;
     if (this._loading) {
-      // Wait for existing load to finish
       await new Promise<void>(resolve => {
         const check = setInterval(() => {
           if (this._loaded) { clearInterval(check); resolve(); }
@@ -60,7 +59,10 @@ export class PaddleService {
       Paddle.Environment.set('sandbox');
     }
 
-    Paddle.Setup({ token: environment.paddle.clientToken });
+    // ✅ Paddle v2 uses Initialize not Setup
+    Paddle.Initialize({
+      token: environment.paddle.clientToken,
+    });
 
     this._loaded = true;
     this._loading = false;
