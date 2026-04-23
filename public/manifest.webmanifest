@@ -1,0 +1,12 @@
+{
+  "name": "The Egg",
+  "short_name": "The Egg",
+  "description": "One egg. 4 billion clicks. Everyone in the world. Nobody knows what's inside.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e0a2e",
+  "theme_color": "#FFD93D",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "64x64", "type": "image/x-icon" }
+  ]
+}

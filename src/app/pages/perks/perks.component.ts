@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { PaddleService } from '../../services/paddle.service';
 import { AuthModalComponent } from '../../components/auth-modal/auth-modal.component';
@@ -63,16 +63,22 @@ const PERKS: Perk[] = [
         </div>
       }
 
+      @if (paddle.loadError()) {
+        <div class="load-error">⚠️ Payment system failed to load. Please refresh and try again.</div>
+      }
+
       <div class="perks-grid">
         @for (perk of perks; track perk.id) {
-          <div class="perk-card" (click)="onBuy(perk)">
+          <div class="perk-card" [class.buying]="buying() === perk.id" (click)="onBuy(perk)">
             @if (perk.limited) {
               <div class="perk-limited">Limited</div>
             }
             <div class="perk-icon">{{ perk.icon }}</div>
             <div class="perk-name">{{ perk.name }}</div>
             <div class="perk-desc">{{ perk.desc }}</div>
-            <div class="perk-price">{{ perk.price }}</div>
+            <div class="perk-price">
+              @if (buying() === perk.id) { Opening… } @else { {{ perk.price }} }
+            </div>
           </div>
         }
       </div>
@@ -93,6 +99,12 @@ const PERKS: Perk[] = [
       text-align: center; margin-top: 28px; font-size: 12px;
       color: rgba(255,255,255,0.2); font-weight: 600;
     }
+    .load-error {
+      background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3);
+      border-radius: 12px; padding: 12px 16px; margin-bottom: 16px;
+      font-size: 13px; font-weight: 700; color: #FF6B6B;
+    }
+    .perk-card.buying { opacity: 0.7; pointer-events: none; }
   `],
 })
 export class PerkStoreComponent {
@@ -102,6 +114,7 @@ export class PerkStoreComponent {
   readonly perks = PERKS;
   readonly showAuthModal = signal(false);
   readonly toast = signal<string | null>(null);
+  readonly buying = signal<number | null>(null);
 
   readonly stars = Array.from({ length: 40 }, (_, i) => ({
     id: i, x: Math.random() * 100, y: Math.random() * 100,
@@ -111,14 +124,25 @@ export class PerkStoreComponent {
 
   private toastTimer: any;
 
+  constructor() {
+    effect(() => {
+      const event = this.paddle.purchaseComplete();
+      if (event) {
+        this.buying.set(null);
+        this.showToast('🎉 Purchase complete! Your perk is now active.');
+      }
+    });
+  }
+
   onBuy(perk: Perk): void {
     if (!this.auth.isSignedIn()) {
       this.showAuthModal.set(true);
       return;
     }
-    // TODO: Wire Paddle.js checkout once account is approved
-    this.paddle.openCheckout(perk.priceId);
-    this.showToast(`🛒 Opening checkout for "${perk.name}"…`);
+    this.buying.set(perk.id);
+    this.paddle.openCheckout(perk.priceId).finally(() => {
+      if (!this.paddle.purchaseComplete()) this.buying.set(null);
+    });
   }
 
   private showToast(msg: string): void {

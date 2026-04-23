@@ -1,4 +1,4 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, inject, signal, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../environments/environment';
 import { SupabaseService } from './supabase.service';
@@ -12,22 +12,21 @@ export class PaddleService {
   private _loaded = false;
   private _loading = false;
 
-  isLoaded(): boolean {
-    return this._loaded;
-  }
+  readonly purchaseComplete = signal<{ priceId: string } | null>(null);
+  readonly loadError = signal(false);
 
   async openCheckout(priceId: string): Promise<void> {
     if (!isPlatformBrowser(this.platformId)) return;
+    if (priceId.includes('REPLACE_ME')) return;
 
-    if (priceId.includes('REPLACE_ME')) {
-      console.warn('[PaddleService] Price ID not set for this perk yet.');
+    try {
+      await this.load();
+    } catch {
+      this.loadError.set(true);
       return;
     }
 
-    await this.load();
-
     const userId = this.supabase.currentUser()?.id ?? null;
-
     Paddle.Checkout.open({
       items: [{ priceId, quantity: 1 }],
       customData: userId ? { userId } : undefined,
@@ -59,9 +58,14 @@ export class PaddleService {
       Paddle.Environment.set('sandbox');
     }
 
-    // ✅ Paddle v2 uses Initialize not Setup
     Paddle.Initialize({
       token: environment.paddle.clientToken,
+      eventCallback: (event: any) => {
+        if (event.name === 'checkout.completed') {
+          const priceId = event.data?.items?.[0]?.price_id ?? '';
+          this.purchaseComplete.set({ priceId });
+        }
+      },
     });
 
     this._loaded = true;

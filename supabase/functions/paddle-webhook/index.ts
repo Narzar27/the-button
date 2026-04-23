@@ -42,7 +42,8 @@ Deno.serve(async (req) => {
   const transactionId = data.id;
   const customerId = data.customer_id;
   const customData = data.custom_data ?? {};
-  const userId: string | null = customData.user_id ?? null;
+  // paddle.service.ts sends { userId } (camelCase)
+  const userId: string | null = customData.userId ?? customData.user_id ?? null;
 
   // Deduplicate: skip if we already processed this transaction
   const { data: existing } = await supabase
