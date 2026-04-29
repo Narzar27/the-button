@@ -42,18 +42,10 @@
 <div class="content">
   <div class="egg-section">
 
-    <!-- Egg number badge -->
-    <div class="egg-number">🥚 Egg #{{ supabase.eggNumber() }} · The Original</div>
-    <div class="egg-title">Crack the Egg</div>
+    <!-- Badge -->
+    <div class="egg-number">🥚 World Record Egg</div>
+    <div class="egg-title">The Most Clicked Egg</div>
     <div class="egg-subtitle">Everyone in the world. One egg. Together.</div>
-
-    <!-- Stage warning -->
-    @if (supabase.crackStage() >= 5) {
-      <div class="crack-stage">
-        ⚠️ Stage {{ supabase.crackStage() + 1 }}/9 —
-        {{ supabase.crackStage() >= 8 ? 'Almost there!' : 'Heavy damage' }}
-      </div>
-    }
 
     <!-- The Egg -->
     <div
@@ -66,7 +58,7 @@
       @if (supabase.isLoading()) {
         <div class="egg-skeleton"></div>
       } @else {
-        <app-egg [stage]="supabase.crackStage()" [size]="220" />
+        <app-egg [stage]="0" [size]="220" />
       }
     </div>
 
@@ -77,30 +69,17 @@
       <div class="global-counter">{{ formattedGlobal() }}</div>
     }
     <div class="counter-label">
-      Total Cracks Worldwide
+      Total Clicks Worldwide
       @if (supabase.isConnected()) {
         <span class="live-dot">● LIVE</span>
       }
     </div>
 
-    <!-- Progress bar -->
-    <div class="progress-wrap">
-      <div class="progress-top">
-        <span>{{ supabase.progressPct().toFixed(4) }}% cracked</span>
-        <span>Goal: 4B</span>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill"
-             [style.width]="(supabase.progressPct() > 0.001 ? supabase.progressPct() : 0.05) + '%'">
-        </div>
-      </div>
-    </div>
-
-    <!-- Crack button -->
+    <!-- Click button -->
     <button class="click-btn"
             (click)="onEggClick($event)"
             [disabled]="!clickLimit.canClick() || supabase.isLoading()">
-      {{ clickLimit.canClick() ? '🥚 Crack It!' : 'No clicks left today' }}
+      {{ clickLimit.canClick() ? '🥚 Click It!' : 'No clicks left today' }}
     </button>
 
     <!-- Daily info -->
@@ -123,19 +102,19 @@
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-val">{{ formatNumber(myClicks()) }}</div>
-        <div class="stat-lbl">My Cracks</div>
+        <div class="stat-lbl">My Clicks</div>
       </div>
       <div class="stat-card">
         <div class="stat-val">{{ clickLimit.totalRemaining() }}</div>
         <div class="stat-lbl">Today Left</div>
       </div>
       <div class="stat-card">
-        <div class="stat-val">{{ supabase.eggNumber() }}</div>
-        <div class="stat-lbl">Egg Number</div>
+        <div class="stat-val">{{ formattedGlobal() }}</div>
+        <div class="stat-lbl">World Record</div>
       </div>
       <div class="stat-card">
-        <div class="stat-val">{{ formattedRemaining() }}</div>
-        <div class="stat-lbl">To Crack</div>
+        <div class="stat-val">{{ clickLimit.DAILY_LIMIT }}</div>
+        <div class="stat-lbl">Daily Limit</div>
       </div>
     </div>
 

@@ -27,7 +27,7 @@ const AVATAR_COLORS = ['#FFD93D', '#FF6B6B', '#4D96FF', '#C77DFF', '#6BCB77', '#
     <div class="content">
       <div class="section-header">
         <div class="section-title">🏆 Global Leaderboard</div>
-        <div class="section-sub">The world's most dedicated crackers</div>
+        <div class="section-sub">The world's most dedicated clickers</div>
       </div>
 
       @if (!auth.isSignedIn()) {
@@ -40,74 +40,37 @@ const AVATAR_COLORS = ['#FFD93D', '#FF6B6B', '#4D96FF', '#C77DFF', '#6BCB77', '#
         </div>
       }
 
-      <div class="lb-grid">
-
-        <!-- Presses table -->
-        <div class="leaderboard">
-          <div class="lb-header">
-            <div class="lb-title">👆 Top Pressers</div>
-            <div class="lb-subtitle">Most clicks</div>
-          </div>
-          @if (loadingPresses()) {
-            <div class="lb-empty">Loading...</div>
-          } @else if (pressEntries().length === 0) {
-            <div class="lb-empty-full">
-              <div style="font-size:36px;margin-bottom:10px;">🥚</div>
-              <div style="font-weight:800;font-size:15px;margin-bottom:4px;">No one yet</div>
-              <div style="font-size:12px;color:rgba(255,255,255,0.4);">Sign in and start pressing!</div>
-            </div>
-          } @else {
-            @for (entry of pressEntries(); track entry.id; let i = $index) {
-              <div class="lb-row" [class.lb-row-me]="isCurrentUser(entry.id)">
-                <div class="lb-rank" [class]="rankClass(i)">{{ rankLabel(i) }}</div>
-                <div class="lb-avatar" [style.background]="avatarBg(i)" [style.color]="avatarColor(i)">
-                  {{ entry.display_name.slice(0, 2).toUpperCase() }}
-                </div>
-                <div class="lb-name-wrap">
-                  <span class="lb-name">{{ entry.display_name }}</span>
-                  @if (isCurrentUser(entry.id)) {
-                    <span class="lb-you">(you)</span>
-                  }
-                </div>
-                <div class="lb-clicks">{{ fmt(entry.total_clicks) }}</div>
-              </div>
-            }
-          }
+      <!-- Top Clickers table -->
+      <div class="leaderboard">
+        <div class="lb-header">
+          <div class="lb-title">👆 Top Clickers</div>
+          <div class="lb-subtitle">Most clicks of all time</div>
         </div>
-
-        <!-- Breaks table -->
-        <div class="leaderboard">
-          <div class="lb-header">
-            <div class="lb-title">💥 Top Breakers</div>
-            <div class="lb-subtitle">Most crack stages triggered</div>
+        @if (loadingPresses()) {
+          <div class="lb-empty">Loading...</div>
+        } @else if (pressEntries().length === 0) {
+          <div class="lb-empty-full">
+            <div style="font-size:36px;margin-bottom:10px;">🥚</div>
+            <div style="font-weight:800;font-size:15px;margin-bottom:4px;">No one yet</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.4);">Sign in and start clicking!</div>
           </div>
-          @if (loadingBreaks()) {
-            <div class="lb-empty">Loading...</div>
-          } @else if (breakEntries().length === 0) {
-            <div class="lb-empty-full">
-              <div style="font-size:36px;margin-bottom:10px;">🥚</div>
-              <div style="font-weight:800;font-size:15px;margin-bottom:4px;">No breakers yet</div>
-              <div style="font-size:12px;color:rgba(255,255,255,0.4);">Be the first to crack a stage!</div>
-            </div>
-          } @else {
-            @for (entry of breakEntries(); track entry.id; let i = $index) {
-              <div class="lb-row" [class.lb-row-me]="isCurrentUser(entry.id)">
-                <div class="lb-rank" [class]="rankClass(i)">{{ rankLabel(i) }}</div>
-                <div class="lb-avatar" [style.background]="avatarBg(i)" [style.color]="avatarColor(i)">
-                  {{ entry.display_name.slice(0, 2).toUpperCase() }}
-                </div>
-                <div class="lb-name-wrap">
-                  <span class="lb-name">{{ entry.display_name }}</span>
-                  @if (isCurrentUser(entry.id)) {
-                    <span class="lb-you">(you)</span>
-                  }
-                </div>
-                <div class="lb-clicks">{{ fmt(entry.eggs_cracked) }}</div>
+        } @else {
+          @for (entry of pressEntries(); track entry.id; let i = $index) {
+            <div class="lb-row" [class.lb-row-me]="isCurrentUser(entry.id)">
+              <div class="lb-rank" [class]="rankClass(i)">{{ rankLabel(i) }}</div>
+              <div class="lb-avatar" [style.background]="avatarBg(i)" [style.color]="avatarColor(i)">
+                {{ entry.display_name.slice(0, 2).toUpperCase() }}
               </div>
-            }
+              <div class="lb-name-wrap">
+                <span class="lb-name">{{ entry.display_name }}</span>
+                @if (isCurrentUser(entry.id)) {
+                  <span class="lb-you">(you)</span>
+                }
+              </div>
+              <div class="lb-clicks">{{ fmt(entry.total_clicks) }}</div>
+            </div>
           }
-        </div>
-
+        }
       </div>
     </div>
   `,
@@ -127,14 +90,6 @@ const AVATAR_COLORS = ['#FFD93D', '#FF6B6B', '#4D96FF', '#C77DFF', '#6BCB77', '#
     }
     .auth-btn:hover { transform: translateY(-1px); }
 
-    .lb-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-    @media (max-width: 640px) {
-      .lb-grid { grid-template-columns: 1fr; }
-    }
 
     .lb-subtitle {
       font-size: 11px; color: rgba(255,255,255,0.4);
@@ -171,9 +126,7 @@ export class LeaderboardComponent implements OnInit {
   readonly auth = inject(AuthService);
 
   readonly pressEntries = signal<LeaderboardEntry[]>([]);
-  readonly breakEntries = signal<LeaderboardEntry[]>([]);
   readonly loadingPresses = signal(false);
-  readonly loadingBreaks = signal(false);
   readonly showAuthModal = signal(false);
 
   readonly stars = Array.from({ length: 40 }, (_, i) => ({
@@ -188,15 +141,13 @@ export class LeaderboardComponent implements OnInit {
 
   private async loadBoth(): Promise<void> {
     this.loadingPresses.set(true);
-    this.loadingBreaks.set(true);
-    const [presses, breaks] = await Promise.allSettled([
-      this.supabase.getLeaderboard(),
-      this.supabase.getBreaksLeaderboard(),
-    ]);
-    this.pressEntries.set(presses.status === 'fulfilled' ? presses.value : []);
-    this.breakEntries.set(breaks.status === 'fulfilled' ? breaks.value : []);
+    try {
+      const entries = await this.supabase.getLeaderboard();
+      this.pressEntries.set(entries);
+    } catch {
+      this.pressEntries.set([]);
+    }
     this.loadingPresses.set(false);
-    this.loadingBreaks.set(false);
   }
 
   isCurrentUser(id: string): boolean {

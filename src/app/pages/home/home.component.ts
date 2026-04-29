@@ -42,9 +42,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   private toastTimer: any;
 
   readonly formattedGlobal = computed(() => this.formatNumber(this.supabase.globalClicks()));
-  readonly formattedRemaining = computed(() => this.formatNumber(
-    Math.max(0, this.supabase.targetClicks() - this.supabase.globalClicks())
-  ));
 
   constructor() {
     const easterColors = ['#FFB7C5','#B5EAD7','#C7CEEA','#FFDAC1','#FFD93D','#D4EDBC','#E8C5FF','#AEE6FF'];
@@ -85,8 +82,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       ? event.clientY
       : event.touches[0]?.clientY ?? window.innerHeight / 2;
 
-    const prevStage = this.supabase.crackStage();
-
     // Optimistic local update
     this.supabase.egg.update(e => e ? { ...e, current_clicks: e.current_clicks + 1 } : e);
     this.myClicks.update(n => n + 1);
@@ -101,14 +96,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.spawnFloater(x, y);
     this.spawnParticles(x, y);
-
-    // Check for stage change
-    const newStage = this.supabase.crackStage();
-    if (newStage > prevStage) {
-      this.spawnParticles(x, y);
-      this.showToast(`💥 Stage ${newStage + 1}! The cracks deepen...`);
-      this.supabase.incrementUserBreaks();
-    }
 
     // Register click + remote increment
     await this.clickLimit.registerClick();
@@ -166,7 +153,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   async share(): Promise<void> {
     const count = this.formatNumber(this.supabase.globalClicks());
     const url = 'https://the-button-pink.vercel.app';
-    const text = `🥚 We've cracked the egg ${count} times. Help us reach 4 billion — nobody knows what's inside. ${url}`;
+    const text = `🥚 The world's most clicked egg has been tapped ${count} times. Join and set the world record! ${url}`;
     try {
       if (navigator.share) {
         await navigator.share({ title: 'The Egg 🥚', text, url });

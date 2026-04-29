@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { AnonIdentityService } from './anon-identity.service';
 import { SupabaseService } from './supabase.service';
 
-const DAILY_LIMIT = 10;
+const DAILY_LIMIT = 5;
 const EXTRA_CLICKS_KEY = 'egg_extra_clicks';
 
 function todayKey(): string {
