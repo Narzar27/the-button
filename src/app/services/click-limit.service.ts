@@ -54,11 +54,37 @@ export class ClickLimitService {
   }
 
   private async syncFromServer(userId: string): Promise<void> {
-    const serverCount = await this.supabase.getDailyClicks(userId, todayDate());
+    const [serverCount, perksRow] = await Promise.all([
+      this.supabase.getDailyClicks(userId, todayDate()),
+      this.supabase.getUserPerks(userId),
+    ]);
+
     // Take the higher of local vs server (never reset clicks the user already spent)
     if (serverCount > this._dailyClicks()) {
       this._dailyClicks.set(serverCount);
       localStorage.setItem(todayKey(), String(serverCount));
+    }
+
+    if (perksRow) {
+      // The server balance is authoritative (webhook credits, spend RPC debits).
+      // Right after a purchase the local optimistic credit may briefly lead the
+      // server (webhook still in flight) — take the higher value in that window.
+      const server = perksRow.extra_clicks;
+      const next = Date.now() < this.optimisticUntil ? Math.max(this._extraClicks(), server) : server;
+      this._extraClicks.set(next);
+      localStorage.setItem(EXTRA_CLICKS_KEY, String(next));
+
+      // Unlimited window only ever extends, so the later timestamp wins
+      const serverUntil = perksRow.unlimited_until ? Date.parse(perksRow.unlimited_until) : 0;
+      if (serverUntil > this._unlimitedUntil()) {
+        this._unlimitedUntil.set(serverUntil);
+        localStorage.setItem(UNLIMITED_UNTIL_KEY, String(serverUntil));
+      } else if (this._unlimitedUntil() > serverUntil && Date.now() >= this.optimisticUntil) {
+        this.seedServerBalance();
+      }
+    } else if (this._extraClicks() > 0 || this._unlimitedUntil() > Date.now()) {
+      // No server row yet: seed it from purchases made before the webhook era
+      this.seedServerBalance();
     }
   }
 
@@ -98,17 +124,25 @@ export class ClickLimitService {
       const newExtra = Math.max(0, this._extraClicks() - 1);
       this._extraClicks.set(newExtra);
       localStorage.setItem(EXTRA_CLICKS_KEY, String(newExtra));
+      this.supabase.incrementUserClicks().catch(console.error);
+      this.queueSpend();
     }
 
     return true;
   }
 
+  /**
+   * Optimistic local credit for instant UX. The paddle-webhook Edge Function
+   * is the authoritative source — it credits user_perks server-side, and the
+   * scheduled resyncs below pick that up.
+   */
   addExtraClicks(amount: number): void {
     const newExtra = this._extraClicks() + amount;
     this._extraClicks.set(newExtra);
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem(EXTRA_CLICKS_KEY, String(newExtra));
     }
+    this.beginOptimisticWindow();
   }
 
   /** Activate (or extend) an unlimited-clicks window, e.g. 24h or 30 days. */
@@ -119,5 +153,43 @@ export class ClickLimitService {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem(UNLIMITED_UNTIL_KEY, String(until));
     }
+    this.beginOptimisticWindow();
+  }
+
+  // ── Server reconciliation ──
+
+  private optimisticUntil = 0;
+  private spendTimer: any;
+  private pendingSpends = 0;
+
+  /** After a purchase: trust local for 60s, then resync once the webhook landed */
+  private beginOptimisticWindow(): void {
+    this.optimisticUntil = Date.now() + 60_000;
+    const user = this.supabase.currentUser();
+    if (!user) return;
+    setTimeout(() => this.syncFromServer(user.id).catch(console.error), 6_000);
+    setTimeout(() => this.syncFromServer(user.id).catch(console.error), 25_000);
+  }
+
+  /** Batch extra-click spends into one atomic decrement RPC */
+  private queueSpend(): void {
+    this.pendingSpends++;
+    clearTimeout(this.spendTimer);
+    this.spendTimer = setTimeout(() => {
+      const n = this.pendingSpends;
+      this.pendingSpends = 0;
+      this.supabase.spendExtraClicks(n).catch(console.error);
+    }, 1500);
+  }
+
+  /** One-time seeding of the server row from pre-webhook local purchases */
+  private seedServerBalance(): void {
+    const until = this._unlimitedUntil();
+    this.supabase.upsertUserPerks({
+      extra_clicks: this._extraClicks(),
+      // Only send the window when we have one, so a device that never bought
+      // unlimited can't null out a pass purchased elsewhere
+      ...(until > 0 ? { unlimited_until: new Date(until).toISOString() } : {}),
+    }).catch(console.error);
   }
 }

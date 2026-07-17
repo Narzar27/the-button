@@ -74,6 +74,7 @@ src/
 ## Supabase Setup Checklist (one-time)
 - [ ] Run `supabase/migrations/001_egg_schema.sql`
 - [ ] Run `supabase/migrations/002_user_tracking.sql`
+- [ ] Run `supabase/migrations/006_user_perks.sql` — perk sync (`user_perks`) + global egg names (`egg_names`)
 - [ ] Enable Realtime on `eggs` table: Dashboard → Database → Publications → supabase_realtime
 - [ ] Add redirect URLs: Auth → URL Configuration:
   - `https://the-button-pink.vercel.app/auth/callback`
@@ -81,10 +82,13 @@ src/
 
 ## Paddle Status
 - Live token: `live_b6242a1fd4e7644a52e6097a54a` (in environment.prod.ts)
-- Account: under review — checkout logs to console in dev, will work in prod once approved
-- 5 price IDs set (clicks10, clicks100, unlimited24h, unlimitedMonth, nameOnEgg)
-- 5 remaining products still need creating (goldenCursor, crackBadge, hatchNotif, certificate, diamondSkin)
-- After approval: set `sandbox: false` in environment.ts, deploy paddle-webhook Edge Function
+- Account: APPROVED — live checkout works in prod
+- 8 price IDs wired (clicks10, clicks100, unlimited24h, unlimitedMonth, nameOnEgg, goldenCursor, crackBadge, diamondSkin)
+- Webhook: `supabase/functions/paddle-webhook` — verifies Paddle-Signature, records `purchases`, credits `user_perks` via `credit_purchase` RPC (requires migrations 006 + 007)
+- Deploy: `npx supabase functions deploy paddle-webhook --project-ref bxsrcjyguitmkrkqtxdn --no-verify-jwt`
+- Secret: `npx supabase secrets set PADDLE_WEBHOOK_SECRET=pdl_ntf... --project-ref bxsrcjyguitmkrkqtxdn`
+- Paddle dashboard: Developer Tools → Notifications → destination `https://bxsrcjyguitmkrkqtxdn.supabase.co/functions/v1/paddle-webhook`, event `transaction.completed`
+- Dev environment stays `sandbox: true` with a placeholder token — grab a sandbox token from Paddle to test checkout locally
 
 ## Gotchas
 - Build with `node ./node_modules/@angular/cli/bin/ng.js build` not `npx ng build`

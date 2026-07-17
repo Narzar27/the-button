@@ -5,6 +5,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SupabaseService } from '../../services/supabase.service';
 import { ClickLimitService } from '../../services/click-limit.service';
+import { PerksService } from '../../services/perks.service';
 import { AuthModalComponent } from '../../components/auth-modal/auth-modal.component';
 import { EggComponent } from '../../components/egg/egg.component';
 
@@ -20,14 +21,25 @@ let particleId = 0;
   standalone: true,
   imports: [RouterLink, AuthModalComponent, EggComponent],
   templateUrl: './home.component.html',
+  host: { '[class.golden-cursor]': 'perks.hasGoldenCursor()' },
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
   readonly supabase = inject(SupabaseService);
   readonly clickLimit = inject(ClickLimitService);
+  readonly perks = inject(PerksService);
 
   readonly showAuthModal = signal(false);
   readonly showShareToast = signal(false);
+  readonly eggNames = signal<string[]>([]);
+
+  /** Everyone's purchased names + the local buyer's (instant, pre-sync) */
+  readonly allEggNames = computed(() => {
+    const names = [...this.eggNames()];
+    const mine = this.perks.eggName();
+    if (mine && !names.includes(mine)) names.push(mine);
+    return names;
+  });
   readonly wiggling = signal(false);
   readonly cracking = signal(false);
   readonly toast = signal<string | null>(null);
@@ -58,7 +70,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.supabase.getEggNames()
+        .then(names => this.eggNames.set(names))
+        .catch(() => {});
+    }
+  }
   ngOnDestroy(): void {
     clearTimeout(this.wiggleTimer);
     clearTimeout(this.crackTimer);
@@ -115,7 +133,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private spawnParticles(x: number, y: number): void {
-    const colors = ['#FFD93D', '#FF9F1C', '#FF6B6B', '#FFF8DC'];
+    const colors = this.perks.hasGoldenCursor()
+      ? ['#FFD700', '#FFC300', '#FFF3B0', '#FFE066'] // golden cursor perk: pure gold sparkles
+      : ['#FFD93D', '#FF9F1C', '#FF6B6B', '#FFF8DC'];
     const pts: Particle[] = Array.from({ length: 8 }, (_, i) => {
       const angle = (i / 8) * Math.PI * 2 + Math.random() * 0.5;
       const dist = 40 + Math.random() * 60;

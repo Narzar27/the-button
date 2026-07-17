@@ -19,6 +19,16 @@ export interface LeaderboardEntry {
   eggs_cracked: number;
 }
 
+export interface UserPerksRow {
+  user_id: string;
+  extra_clicks: number;
+  unlimited_until: string | null;
+  golden_cursor: boolean;
+  diamond_skin: boolean;
+  crack_badge: boolean;
+  egg_name: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SupabaseService {
   private platformId = inject(PLATFORM_ID);
@@ -165,6 +175,52 @@ export class SupabaseService {
     if (!user) return;
     const { error } = await this.client.rpc('increment_user_clicks', { uid: user.id });
     if (error) console.error('increment_user_clicks failed:', error.message);
+  }
+
+  /** Fetch the signed-in user's server-side perk state (null if never synced) */
+  async getUserPerks(userId: string): Promise<UserPerksRow | null> {
+    const { data } = await this.client
+      .from('user_perks')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+    return data as UserPerksRow | null;
+  }
+
+  /** Upsert part of the signed-in user's perk row (no-op when signed out) */
+  async upsertUserPerks(patch: Partial<Omit<UserPerksRow, 'user_id'>>): Promise<void> {
+    const user = this.currentUser();
+    if (!user) return;
+    const { error } = await this.client
+      .from('user_perks')
+      .upsert({ user_id: user.id, ...patch }, { onConflict: 'user_id' });
+    if (error) console.error('upsertUserPerks failed:', error.message);
+  }
+
+  /** Atomically decrement the signed-in user's purchased-click balance */
+  async spendExtraClicks(amount: number): Promise<void> {
+    if (!this.currentUser()) return;
+    const { error } = await this.client.rpc('spend_extra_clicks', { amount });
+    if (error) console.error('spend_extra_clicks failed:', error.message);
+  }
+
+  /** Names purchased via "Name on the Egg" — visible to everyone */
+  async getEggNames(): Promise<string[]> {
+    const { data } = await this.client
+      .from('egg_names')
+      .select('name')
+      .order('created_at', { ascending: true })
+      .limit(50);
+    return (data ?? []).map(r => r.name as string);
+  }
+
+  async upsertEggName(name: string): Promise<void> {
+    const user = this.currentUser();
+    if (!user) return;
+    const { error } = await this.client
+      .from('egg_names')
+      .upsert({ user_id: user.id, name: name.slice(0, 40) }, { onConflict: 'user_id' });
+    if (error) console.error('upsertEggName failed:', error.message);
   }
 
   async getDailyClicks(userId: string, date: string): Promise<number> {

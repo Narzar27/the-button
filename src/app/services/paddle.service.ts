@@ -3,6 +3,8 @@ import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../environments/environment';
 import { SupabaseService } from './supabase.service';
 import { ClickLimitService } from './click-limit.service';
+import { PerksService } from './perks.service';
+import { AuthService } from './auth.service';
 
 declare const Paddle: any;
 
@@ -11,6 +13,8 @@ export class PaddleService {
   private platformId = inject(PLATFORM_ID);
   private supabase = inject(SupabaseService);
   private clickLimit = inject(ClickLimitService);
+  private perks = inject(PerksService);
+  private auth = inject(AuthService);
   private _loadPromise: Promise<void> | null = null;
 
   readonly purchaseComplete = signal<{ priceId: string } | null>(null);
@@ -79,6 +83,10 @@ export class PaddleService {
       case p.clicks100:      this.clickLimit.addExtraClicks(100); break;
       case p.unlimited24h:   this.clickLimit.activateUnlimited(24); break;
       case p.unlimitedMonth: this.clickLimit.activateUnlimited(24 * 30); break;
+      case p.crackBadge:     this.perks.grant('crackBadge'); break;
+      case p.goldenCursor:   this.perks.grant('goldenCursor'); break;
+      case p.diamondSkin:    this.perks.grant('diamondSkin'); break;
+      case p.nameOnEgg:      this.perks.grant('nameOnEgg', this.auth.displayName() ?? 'Anonymous Cracker'); break;
     }
   }
 }

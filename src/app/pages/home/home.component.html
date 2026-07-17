@@ -43,7 +43,12 @@
   <div class="egg-section">
 
     <!-- Badge -->
-    <div class="egg-number">🥚 World Record Egg</div>
+    <div class="badge-row">
+      <div class="egg-number">🥚 World Record Egg</div>
+      @if (perks.hasCrackBadge()) {
+        <div class="egg-number owned-badge">🏅 Egg #1 Cracker</div>
+      }
+    </div>
     <div class="egg-title">The Most Clicked Egg</div>
     <div class="egg-subtitle">Everyone in the world. One egg. Together.</div>
 
@@ -59,6 +64,16 @@
         <div class="egg-skeleton"></div>
       } @else {
         <app-egg [stage]="0" [size]="220" />
+        @if (perks.hasDiamondSkin()) {
+          <div class="diamond-overlay" aria-hidden="true"></div>
+        }
+        @if (allEggNames().length > 0) {
+          <div class="egg-name-banner" aria-hidden="true">
+            <span [style.animation-duration.s]="5 + allEggNames().length * 3">
+              👑 {{ allEggNames().join(' · 👑 ') }}
+            </span>
+          </div>
+        }
       }
     </div>
 

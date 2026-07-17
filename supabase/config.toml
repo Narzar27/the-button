@@ -1,0 +1,6 @@
+project_id = "bxsrcjyguitmkrkqtxdn"
+
+# Paddle calls this endpoint directly — it can't send a Supabase JWT.
+# Authentication is the Paddle-Signature HMAC check inside the function.
+[functions.paddle-webhook]
+verify_jwt = false

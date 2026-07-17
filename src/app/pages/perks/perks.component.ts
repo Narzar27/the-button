@@ -1,6 +1,7 @@
 import { Component, inject, signal, effect } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { PaddleService } from '../../services/paddle.service';
+import { PerksService } from '../../services/perks.service';
 import { AuthModalComponent } from '../../components/auth-modal/auth-modal.component';
 import { environment } from '../../../environments/environment';
 
@@ -69,7 +70,10 @@ const PERKS: Perk[] = [
 
       <div class="perks-grid">
         @for (perk of perks; track perk.id) {
-          <div class="perk-card" [class.buying]="buying() === perk.id" (click)="onBuy(perk)">
+          <div class="perk-card"
+               [class.buying]="buying() === perk.id"
+               [class.owned]="isOwned(perk)"
+               (click)="onBuy(perk)">
             @if (perk.limited) {
               <div class="perk-limited">Limited</div>
             }
@@ -77,7 +81,9 @@ const PERKS: Perk[] = [
             <div class="perk-name">{{ perk.name }}</div>
             <div class="perk-desc">{{ perk.desc }}</div>
             <div class="perk-price">
-              @if (buying() === perk.id) { Opening… } @else { {{ perk.price }} }
+              @if (isOwned(perk)) { ✓ Owned }
+              @else if (buying() === perk.id) { Opening… }
+              @else { {{ perk.price }} }
             </div>
           </div>
         }
@@ -105,11 +111,19 @@ const PERKS: Perk[] = [
       font-size: 13px; font-weight: 700; color: #FF6B6B;
     }
     .perk-card.buying { opacity: 0.7; pointer-events: none; }
+    .perk-card.owned {
+      cursor: default;
+      border-color: rgba(107,203,119,0.35);
+      background: rgba(107,203,119,0.06);
+    }
+    .perk-card.owned:hover { transform: none; box-shadow: none; }
+    .perk-card.owned .perk-price { color: #6BCB77; }
   `],
 })
 export class PerkStoreComponent {
   readonly auth = inject(AuthService);
   readonly paddle = inject(PaddleService);
+  readonly ownedPerks = inject(PerksService);
 
   readonly perks = PERKS;
   readonly showAuthModal = signal(false);
@@ -134,7 +148,22 @@ export class PerkStoreComponent {
     });
   }
 
+  /** One-time cosmetics show as owned; click packs & passes stay repurchasable */
+  isOwned(perk: Perk): boolean {
+    switch (perk.priceId) {
+      case p.crackBadge:   return this.ownedPerks.hasCrackBadge();
+      case p.nameOnEgg:    return this.ownedPerks.eggName() !== null;
+      case p.goldenCursor: return this.ownedPerks.hasGoldenCursor();
+      case p.diamondSkin:  return this.ownedPerks.hasDiamondSkin();
+      default:             return false;
+    }
+  }
+
   onBuy(perk: Perk): void {
+    if (this.isOwned(perk)) {
+      this.showToast('✨ You already own this perk!');
+      return;
+    }
     if (!this.auth.isSignedIn()) {
       this.showAuthModal.set(true);
       return;
@@ -151,6 +180,10 @@ export class PerkStoreComponent {
       case p.clicks100:      return '💯 100 extra clicks added — go crack that egg!';
       case p.unlimited24h:   return '🌙 Unlimited clicks active for 24 hours!';
       case p.unlimitedMonth: return '♾️ Unlimited clicks active for the month!';
+      case p.crackBadge:     return '🏅 Badge unlocked — it now shows on your egg page!';
+      case p.nameOnEgg:      return '👑 Your name now scrolls across the egg!';
+      case p.goldenCursor:   return '✨ Golden cursor equipped — clicks now sparkle gold!';
+      case p.diamondSkin:    return '💎 Diamond skin applied — your egg is shimmering!';
       default:               return '🎉 Purchase complete! Your perk is now active.';
     }
   }
