@@ -5,6 +5,7 @@ import { SupabaseService } from './supabase.service';
 
 const DAILY_LIMIT = 5;
 const EXTRA_CLICKS_KEY = 'egg_extra_clicks';
+const UNLIMITED_UNTIL_KEY = 'egg_unlimited_until';
 
 function todayKey(): string {
   return `egg_daily_${new Date().toISOString().split('T')[0]}`;
@@ -24,6 +25,7 @@ export class ClickLimitService {
 
   private _dailyClicks = signal(0);
   private _extraClicks = signal(0);
+  private _unlimitedUntil = signal(0);
 
   readonly remainingFree = computed(() => Math.max(0, DAILY_LIMIT - this._dailyClicks()));
   readonly totalRemaining = computed(() => this.remainingFree() + this._extraClicks());
@@ -47,6 +49,8 @@ export class ClickLimitService {
     this._dailyClicks.set(daily);
     const extra = parseInt(localStorage.getItem(EXTRA_CLICKS_KEY) ?? '0', 10);
     this._extraClicks.set(extra);
+    const unlimitedUntil = parseInt(localStorage.getItem(UNLIMITED_UNTIL_KEY) ?? '0', 10);
+    this._unlimitedUntil.set(unlimitedUntil);
   }
 
   private async syncFromServer(userId: string): Promise<void> {
@@ -58,8 +62,12 @@ export class ClickLimitService {
     }
   }
 
+  isUnlimited(): boolean {
+    return this._unlimitedUntil() > Date.now();
+  }
+
   canClick(): boolean {
-    return this.totalRemaining() > 0;
+    return this.isUnlimited() || this.totalRemaining() > 0;
   }
 
   getRemainingClicks(): number {
@@ -77,7 +85,10 @@ export class ClickLimitService {
     const userId = this.supabase.currentUser()?.id;
     const syncId = userId ?? this.anon.anonId();
 
-    if (this.remainingFree() > 0) {
+    if (this.isUnlimited()) {
+      // Unlimited pass active — nothing to consume, still count toward the leaderboard
+      this.supabase.incrementUserClicks().catch(console.error);
+    } else if (this.remainingFree() > 0) {
       const newCount = this._dailyClicks() + 1;
       this._dailyClicks.set(newCount);
       localStorage.setItem(todayKey(), String(newCount));
@@ -97,6 +108,16 @@ export class ClickLimitService {
     this._extraClicks.set(newExtra);
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem(EXTRA_CLICKS_KEY, String(newExtra));
+    }
+  }
+
+  /** Activate (or extend) an unlimited-clicks window, e.g. 24h or 30 days. */
+  activateUnlimited(hours: number): void {
+    const base = Math.max(this._unlimitedUntil(), Date.now());
+    const until = base + hours * 3_600_000;
+    this._unlimitedUntil.set(until);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(UNLIMITED_UNTIL_KEY, String(until));
     }
   }
 }

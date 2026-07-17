@@ -30,8 +30,15 @@ html, body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+/* Fixed gradient layer — avoids background-attachment: fixed, which repaints
+   the whole viewport on every scroll frame (jank on mobile) */
+.app::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background: linear-gradient(160deg, #1e0a2e 0%, #0a1e0d 55%, #1e1200 100%);
-  background-attachment: fixed;
 }
 
 /* ── Easter confetti dots ── */
@@ -92,10 +99,28 @@ html, body {
   position: relative; display: inline-block;
   cursor: pointer; margin: 0 auto 28px;
   filter: drop-shadow(0 20px 60px rgba(255,217,61,0.3));
-  transition: filter 0.3s;
+  transition: transform 0.2s ease-out;
   user-select: none;
 }
-.egg-wrap:hover { filter: drop-shadow(0 25px 70px rgba(255,217,61,0.45)); }
+.egg-wrap:hover { transform: scale(1.02); }
+/* Composited glow layers (opacity-only) — animating filter/drop-shadow here
+   forced a full repaint on every click */
+.egg-wrap::before,
+.egg-wrap::after {
+  content: '';
+  position: absolute; inset: -18%;
+  pointer-events: none; z-index: -1;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.egg-wrap::before {
+  background: radial-gradient(circle, rgba(255,217,61,0.35) 0%, transparent 70%);
+}
+.egg-wrap::after {
+  background: radial-gradient(circle, rgba(255,107,107,0.5) 0%, transparent 70%);
+}
+.egg-wrap:hover::before { opacity: 1; }
 .egg-skeleton {
   width: 200px; height: 250px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
   background: rgba(255,255,255,0.06); animation: pulse 1.5s ease-in-out infinite;
@@ -115,12 +140,12 @@ html, body {
 }
 .egg-wiggle { animation: egg-wiggle 0.4s ease; }
 
-@keyframes egg-crack-flash {
-  0% { filter: drop-shadow(0 20px 60px rgba(255,217,61,0.3)); }
-  50% { filter: drop-shadow(0 20px 80px rgba(255,107,107,0.8)) brightness(1.3); }
-  100% { filter: drop-shadow(0 20px 60px rgba(255,217,61,0.3)); }
+@keyframes egg-glow-pulse {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
 }
-.egg-crack-flash { animation: egg-crack-flash 0.3s ease; }
+.egg-crack-flash::after { animation: egg-glow-pulse 0.3s ease; }
 
 /* ── Global counter ── */
 .global-counter {
@@ -173,10 +198,15 @@ html, body {
 
 /* ── Daily info ── */
 .daily-info {
-  margin-top: 8px; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.5);
+  margin-top: 8px; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.6);
   margin-bottom: 24px;
 }
 .daily-info span { color: var(--yellow); }
+.daily-link {
+  color: var(--yellow); text-decoration: underline; text-underline-offset: 3px;
+  cursor: pointer; transition: color 0.15s;
+}
+.daily-link:hover { color: var(--orange); }
 
 /* ── Share button ── */
 .share-btn {
@@ -237,7 +267,8 @@ html, body {
   font-size: 14px; font-weight: 700; color: white;
   z-index: 2000; backdrop-filter: blur(10px);
   animation: toast-in 0.3s ease;
-  white-space: nowrap;
+  max-width: calc(100vw - 32px);
+  text-align: center;
 }
 @keyframes toast-in {
   from { opacity: 0; transform: translateX(-50%) translateY(20px); }
@@ -323,12 +354,32 @@ html, body {
 /* ── Selection ── */
 ::selection { background: rgba(255,217,61,0.3); color: white; }
 
+/* ── Keyboard focus ── */
+button:focus-visible, a:focus-visible, input:focus-visible, .lb-tab:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 3px;
+  border-radius: 99px;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .star, .floater, .crack-particle, .egg-skeleton,
+  .egg-wiggle, .egg-crack-flash::after, .toast, .progress-fill {
+    animation: none !important;
+    transition: none !important;
+  }
+  .floater, .crack-particle { display: none; }
+}
+
 /* ── Responsive ── */
 @media (max-width: 600px) {
   .egg-title { font-size: 32px; }
   .global-counter { font-size: 38px; }
   .click-btn { font-size: 20px; padding: 14px 36px; }
-  .stats-row { gap: 8px; }
-  .stat-card { min-width: 80px; padding: 10px 14px; }
+  .stats-row {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px; max-width: 340px; margin-left: auto; margin-right: auto;
+  }
+  .stat-card { min-width: 0; padding: 10px 14px; }
   .perks-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 }

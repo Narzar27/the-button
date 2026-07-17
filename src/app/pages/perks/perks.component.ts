@@ -129,7 +129,7 @@ export class PerkStoreComponent {
       const event = this.paddle.purchaseComplete();
       if (event) {
         this.buying.set(null);
-        this.showToast('🎉 Purchase complete! Your perk is now active.');
+        this.showToast(this.purchaseMessage(event.priceId));
       }
     });
   }
@@ -143,6 +143,16 @@ export class PerkStoreComponent {
     this.paddle.openCheckout(perk.priceId).finally(() => {
       if (!this.paddle.purchaseComplete()) this.buying.set(null);
     });
+  }
+
+  private purchaseMessage(priceId: string): string {
+    switch (priceId) {
+      case p.clicks10:       return '⚡ 10 extra clicks added — go crack that egg!';
+      case p.clicks100:      return '💯 100 extra clicks added — go crack that egg!';
+      case p.unlimited24h:   return '🌙 Unlimited clicks active for 24 hours!';
+      case p.unlimitedMonth: return '♾️ Unlimited clicks active for the month!';
+      default:               return '🎉 Purchase complete! Your perk is now active.';
+    }
   }
 
   private showToast(msg: string): void {

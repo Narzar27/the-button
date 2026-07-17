@@ -84,12 +84,14 @@
 
     <!-- Daily info -->
     <div class="daily-info">
-      @if (clickLimit.canClick()) {
-        <span>{{ clickLimit.totalRemaining() }}</span> free clicks remaining today ·
-        <a routerLink="/perks" style="color: #FFD93D; text-decoration: underline; cursor: pointer;">Get more →</a>
+      @if (clickLimit.isUnlimited()) {
+        <span>♾️ Unlimited clicks</span> active — go wild!
+      } @else if (clickLimit.canClick()) {
+        <span>{{ clickLimit.totalRemaining() }}</span> clicks remaining today ·
+        <a routerLink="/perks" class="daily-link">Get more →</a>
       } @else {
         Daily limit reached ·
-        <a routerLink="/perks" style="color: #FFD93D; text-decoration: underline; cursor: pointer;">Buy extra clicks →</a>
+        <a routerLink="/perks" class="daily-link">Buy extra clicks →</a>
       }
     </div>
 
@@ -105,7 +107,7 @@
         <div class="stat-lbl">My Clicks</div>
       </div>
       <div class="stat-card">
-        <div class="stat-val">{{ clickLimit.totalRemaining() }}</div>
+        <div class="stat-val">{{ clickLimit.isUnlimited() ? '∞' : clickLimit.totalRemaining() }}</div>
         <div class="stat-lbl">Today Left</div>
       </div>
       <div class="stat-card">

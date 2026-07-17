@@ -117,7 +117,7 @@ const AVATAR_COLORS = ['#FFD93D', '#FF6B6B', '#4D96FF', '#C77DFF', '#6BCB77', '#
     }
     .lb-row-me {
       background: rgba(255,217,61,0.07) !important;
-      border-left: 3px solid rgba(255,217,61,0.5);
+      box-shadow: inset 0 0 0 1px rgba(255,217,61,0.3);
     }
   `],
 })

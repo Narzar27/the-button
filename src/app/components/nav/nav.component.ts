@@ -43,9 +43,8 @@ import { AuthModalComponent } from '../auth-modal/auth-modal.component';
   styles: [`
     .nav-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 24px;
+      padding: 16px 24px; flex-wrap: wrap; gap: 10px;
       background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(10px);
       border-bottom: 1px solid rgba(255,255,255,0.1);
     }
     .logo {
@@ -75,6 +74,7 @@ import { AuthModalComponent } from '../auth-modal/auth-modal.component';
       background: rgba(255,255,255,0.1); border-radius: 99px;
       padding: 6px 14px 6px 6px; font-size: 13px; font-weight: 700;
       font-family: 'Nunito', sans-serif; color: white;
+      max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .avatar-sm {
       width: 28px; height: 28px; border-radius: 50%;
