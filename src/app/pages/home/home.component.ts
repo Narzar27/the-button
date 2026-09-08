@@ -11,7 +11,6 @@ import { EggComponent } from '../../components/egg/egg.component';
 
 interface Floater { id: number; x: number; y: number; }
 interface Particle { id: number; x: number; y: number; tx: string; ty: string; rot: string; color: string; size: number; dur: number; }
-interface Star { id: number; x: number; y: number; size: number; duration: number; delay: number; color: string; }
 
 let floaterId = 0;
 let particleId = 0;
@@ -47,8 +46,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly particles = signal<Particle[]>([]);
   readonly myClicks = signal(0);
 
-  readonly stars: Star[] = [];
-
   private wiggleTimer: any;
   private crackTimer: any;
   private toastTimer: any;
@@ -56,19 +53,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly formattedGlobal = computed(() => this.formatNumber(this.supabase.globalClicks()));
 
   constructor() {
-    const easterColors = ['#FFB7C5','#B5EAD7','#C7CEEA','#FFDAC1','#FFD93D','#D4EDBC','#E8C5FF','#AEE6FF'];
-    for (let i = 0; i < 60; i++) {
-      this.stars.push({
-        id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: 1 + Math.random() * 2.5,
-        duration: 2 + Math.random() * 4,
-        delay: Math.random() * 4,
-        color: easterColors[Math.floor(Math.random() * easterColors.length)],
-      });
-    }
-
     // Seed "My Clicks" from the signed-in user's real lifetime total, once known —
     // otherwise it always reads 0 after a refresh even though the server remembers.
     effect(() => {
@@ -196,7 +180,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     } catch {}
   }
 
-  trackStar(_: number, s: Star) { return s.id; }
   trackFloater(_: number, f: Floater) { return f.id; }
   trackParticle(_: number, p: Particle) { return p.id; }
 }

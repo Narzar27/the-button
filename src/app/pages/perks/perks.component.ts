@@ -34,16 +34,6 @@ const PERKS: Perk[] = [
   standalone: true,
   imports: [AuthModalComponent],
   template: `
-    <!-- Stars -->
-    <div class="stars">
-      @for (s of stars; track s.id) {
-        <div class="star" [style.left.%]="s.x" [style.top.%]="s.y"
-             [style.width.px]="s.size" [style.height.px]="s.size"
-             [style.background]="s.color"
-             [style.animation-duration.s]="s.dur" [style.animation-delay.s]="s.delay"></div>
-      }
-    </div>
-
     @if (showAuthModal()) {
       <app-auth-modal (closed)="showAuthModal.set(false)" />
     }
@@ -129,12 +119,6 @@ export class PerkStoreComponent {
   readonly showAuthModal = signal(false);
   readonly toast = signal<string | null>(null);
   readonly buying = signal<number | null>(null);
-
-  readonly stars = Array.from({ length: 40 }, (_, i) => ({
-    id: i, x: Math.random() * 100, y: Math.random() * 100,
-    size: 1 + Math.random() * 2, dur: 2 + Math.random() * 4, delay: Math.random() * 4,
-    color: ['#FFB7C5','#B5EAD7','#C7CEEA','#FFDAC1','#FFD93D','#D4EDBC','#E8C5FF','#AEE6FF'][Math.floor(Math.random() * 8)],
-  }));
 
   private toastTimer: any;
 
