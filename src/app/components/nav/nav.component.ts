@@ -91,7 +91,7 @@ import { AuthModalComponent } from '../auth-modal/auth-modal.component';
     }
 
     .tabs {
-      display: flex; gap: 26px; padding: 0 24px;
+      display: flex; justify-content: center; gap: 26px; padding: 0 24px;
       border-top: 1px solid rgba(255,255,255,0.06);
     }
     .tab {
