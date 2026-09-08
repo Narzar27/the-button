@@ -170,6 +170,16 @@ export class SupabaseService {
     if (error) throw error;
   }
 
+  /** Fetch the signed-in user's lifetime click total (for seeding "My Clicks" on load) */
+  async getUserTotalClicks(userId: string): Promise<number> {
+    const { data } = await this.client
+      .from('users')
+      .select('total_clicks')
+      .eq('id', userId)
+      .maybeSingle();
+    return data?.total_clicks ?? 0;
+  }
+
   async incrementUserClicks(): Promise<void> {
     const user = this.currentUser();
     if (!user) return;

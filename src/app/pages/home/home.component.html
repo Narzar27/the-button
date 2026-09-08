@@ -63,7 +63,7 @@
       @if (supabase.isLoading()) {
         <div class="egg-skeleton"></div>
       } @else {
-        <app-egg [stage]="0" [size]="220" />
+        <app-egg [stage]="supabase.crackStage()" [size]="220" />
         @if (perks.hasDiamondSkin()) {
           <div class="diamond-overlay" aria-hidden="true"></div>
         }
@@ -88,6 +88,17 @@
       @if (supabase.isConnected()) {
         <span class="live-dot">● LIVE</span>
       }
+    </div>
+
+    <!-- Progress toward the crack -->
+    <div class="progress-wrap">
+      <div class="progress-top">
+        <span>{{ formatNumber(supabase.globalClicks()) }} clicks</span>
+        <span>Goal: {{ formatNumber(supabase.targetClicks()) }}</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="supabase.progressPct()"></div>
+      </div>
     </div>
 
     <!-- Click button -->

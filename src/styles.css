@@ -38,10 +38,14 @@ html, body {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(160deg, #1e0a2e 0%, #0a1e0d 55%, #1e1200 100%);
+  /* Warm "nest at dawn" backdrop — cozy terracotta dark instead of a cold
+     midnight-purple void, so the page reads as friendly, not spooky. */
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 18%, rgba(255,159,28,0.16), transparent 65%),
+    linear-gradient(160deg, #2b1710 0%, #401f11 45%, #351a10 75%, #200f08 100%);
 }
 
-/* ── Easter confetti dots ── */
+/* ── Confetti sparkles ── */
 .stars {
   position: fixed;
   inset: 0;
@@ -54,8 +58,8 @@ html, body {
   animation: twinkle ease-in-out infinite;
 }
 @keyframes twinkle {
-  0%, 100% { opacity: 0.15; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(1.4); }
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(1.3); }
 }
 
 /* ── Content layout ── */

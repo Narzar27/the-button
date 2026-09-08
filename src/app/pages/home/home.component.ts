@@ -1,5 +1,5 @@
 import {
-  Component, inject, signal, computed, OnInit, OnDestroy, PLATFORM_ID,
+  Component, inject, signal, computed, effect, OnInit, OnDestroy, PLATFORM_ID,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -68,6 +68,17 @@ export class HomeComponent implements OnInit, OnDestroy {
         color: easterColors[Math.floor(Math.random() * easterColors.length)],
       });
     }
+
+    // Seed "My Clicks" from the signed-in user's real lifetime total, once known —
+    // otherwise it always reads 0 after a refresh even though the server remembers.
+    effect(() => {
+      const user = this.supabase.currentUser();
+      if (user) {
+        this.supabase.getUserTotalClicks(user.id)
+          .then(total => this.myClicks.set(total))
+          .catch(() => {});
+      }
+    });
   }
 
   ngOnInit(): void {
