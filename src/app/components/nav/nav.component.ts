@@ -27,13 +27,13 @@ import { AuthModalComponent } from '../auth-modal/auth-modal.component';
 
       <nav class="tabs">
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="tab">
-          🥚 The Egg
+          The Egg
         </a>
         <a routerLink="/leaderboard" routerLinkActive="active" class="tab">
-          🏆 Leaderboard
+          Leaderboard
         </a>
         <a routerLink="/perks" routerLinkActive="active" class="tab">
-          ⚡ Perk Store
+          Perk Store
         </a>
       </nav>
     </div>
@@ -91,23 +91,31 @@ import { AuthModalComponent } from '../auth-modal/auth-modal.component';
     }
 
     .tabs {
-      display: flex; gap: 6px; padding: 10px 24px 14px;
+      display: flex; gap: 26px; padding: 0 24px;
       border-top: 1px solid rgba(255,255,255,0.06);
     }
     .tab {
-      padding: 8px 18px; border-radius: 99px; font-size: 13px; font-weight: 700;
-      cursor: pointer; color: rgba(255,255,255,0.5); transition: all 0.15s ease-out;
-      border: 1px solid transparent; text-decoration: none;
-      font-family: 'Nunito', sans-serif;
+      position: relative;
+      padding: 12px 1px 10px;
+      font-size: 13px; font-weight: 700;
+      cursor: pointer; color: rgba(255,255,255,0.5);
+      text-decoration: none; font-family: 'Nunito', sans-serif;
+      transition: color 0.15s ease-out;
     }
-    .tab:hover { color: white; background: rgba(255,255,255,0.06); transform: translateY(-1px); }
-    .tab.active {
-      background: rgba(255,217,61,0.14); color: #FFD93D;
-      border-color: rgba(255,217,61,0.35);
+    .tab::after {
+      content: '';
+      position: absolute; left: 0; right: 0; bottom: 0;
+      height: 2px; border-radius: 2px;
+      background: #FFD93D;
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform 0.2s ease-out;
     }
-    .tab.active:hover { background: rgba(255,217,61,0.2); }
+    .tab:hover { color: white; }
+    .tab.active { color: white; font-weight: 800; }
+    .tab.active::after { transform: scaleX(1); }
     @media (prefers-reduced-motion: reduce) {
-      .tab:hover { transform: none; }
+      .tab::after { transition: none; }
     }
   `],
 })
