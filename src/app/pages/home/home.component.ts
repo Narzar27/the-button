@@ -3,9 +3,10 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { SupabaseService } from '../../services/supabase.service';
+import { SupabaseService, LeaderboardEntry } from '../../services/supabase.service';
 import { ClickLimitService } from '../../services/click-limit.service';
 import { PerksService } from '../../services/perks.service';
+import { AuthService } from '../../services/auth.service';
 import { AuthModalComponent } from '../../components/auth-modal/auth-modal.component';
 import { EggComponent } from '../../components/egg/egg.component';
 
@@ -27,6 +28,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly supabase = inject(SupabaseService);
   readonly clickLimit = inject(ClickLimitService);
   readonly perks = inject(PerksService);
+  readonly auth = inject(AuthService);
 
   readonly showAuthModal = signal(false);
   readonly showShareToast = signal(false);
@@ -47,6 +49,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly myClicks = signal(0);
   /** Session-only — gates the "Click me!" hint, independent of lifetime totals */
   readonly hasClickedThisSession = signal(false);
+
+  readonly leaderboardPreview = signal<LeaderboardEntry[]>([]);
+  readonly loadingLeaderboard = signal(true);
 
   private wiggleTimer: any;
   private crackTimer: any;
@@ -72,6 +77,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.supabase.getEggNames()
         .then(names => this.eggNames.set(names))
         .catch(() => {});
+
+      this.supabase.getLeaderboard()
+        .then(entries => this.leaderboardPreview.set(entries.slice(0, 5)))
+        .catch(() => {})
+        .finally(() => this.loadingLeaderboard.set(false));
     }
   }
   ngOnDestroy(): void {
@@ -184,5 +194,16 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   trackFloater(_: number, f: Floater) { return f.id; }
+
+  isCurrentUser(id: string): boolean {
+    return this.supabase.currentUser()?.id === id;
+  }
+
+  rankLabel(i: number): string {
+    if (i === 0) return '🥇';
+    if (i === 1) return '🥈';
+    if (i === 2) return '🥉';
+    return `#${i + 1}`;
+  }
   trackParticle(_: number, p: Particle) { return p.id; }
 }

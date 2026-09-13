@@ -304,6 +304,67 @@ html, body {
 .stat-val { font-family: 'Fredoka One', cursive; font-size: 26px; color: var(--yellow); }
 .stat-lbl { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
 
+/* ── Home layout: egg + leaderboard sidebar ── */
+.home-layout {
+  display: flex; flex-direction: column; gap: 28px; align-items: stretch;
+}
+@media (min-width: 900px) {
+  .content.content-wide { max-width: 1120px; }
+  .home-layout { flex-direction: row; align-items: flex-start; gap: 36px; }
+  .egg-section { flex: 1; min-width: 0; }
+}
+
+/* ── Leaderboard preview widget ── */
+.lb-widget {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px; padding: 20px; text-align: left;
+  font-family: 'Nunito', sans-serif;
+}
+@media (min-width: 900px) {
+  .lb-widget { width: 280px; flex-shrink: 0; position: sticky; top: 100px; }
+}
+.lb-widget-title {
+  font-family: 'Fredoka One', cursive; font-size: 19px; color: white; margin-bottom: 4px;
+}
+.lb-widget-sub {
+  font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.45);
+  margin-bottom: 16px; line-height: 1.4;
+}
+.lb-widget-empty {
+  text-align: center; padding: 24px 0; font-size: 13px; font-weight: 700;
+  color: rgba(255,255,255,0.35);
+}
+.lb-widget-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.lb-widget-row:last-of-type { border-bottom: none; }
+.lb-widget-row-me {
+  background: rgba(255,217,61,0.07); margin: 0 -10px; padding: 8px 10px; border-radius: 10px;
+}
+.lb-widget-rank { font-size: 13px; font-weight: 800; width: 26px; flex-shrink: 0; color: rgba(255,255,255,0.5); }
+.lb-widget-name {
+  flex: 1; min-width: 0; font-size: 13px; font-weight: 800; color: white;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lb-widget-clicks { font-size: 12px; font-weight: 700; color: var(--yellow); flex-shrink: 0; }
+.lb-widget-cta {
+  width: 100%; margin-top: 16px; padding: 11px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--yellow), var(--orange)); border: none;
+  font-family: 'Fredoka One', cursive; font-size: 14px; color: var(--dark);
+  cursor: pointer; transition: transform 0.15s ease-out;
+}
+.lb-widget-cta:hover { transform: translateY(-1px); }
+.lb-widget-link {
+  display: block; text-align: center; margin-top: 16px;
+  font-size: 12px; font-weight: 800; color: rgba(255,255,255,0.5);
+  text-decoration: none;
+}
+.lb-widget-link:hover { color: var(--yellow); }
+@media (prefers-reduced-motion: reduce) {
+  .lb-widget-cta:hover { transform: none; }
+}
+
 /* ── Crack stage indicator ── */
 .crack-stage {
   display: inline-flex; align-items: center; gap: 6px;

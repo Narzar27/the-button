@@ -28,7 +28,8 @@
 }
 
 <!-- Main content -->
-<div class="content">
+<div class="content content-wide">
+  <div class="home-layout">
   <div class="egg-section">
 
     <!-- Badge -->
@@ -137,6 +138,40 @@
         <div class="stat-lbl">Daily Limit</div>
       </div>
     </div>
+
+  </div>
+
+  <!-- Leaderboard preview -->
+  <aside class="lb-widget">
+    <div class="lb-widget-title">🏆 Top Clickers</div>
+    <div class="lb-widget-sub">
+      @if (auth.isSignedIn()) {
+        Keep clicking to climb the ranks!
+      } @else {
+        Sign in free — your name could be here.
+      }
+    </div>
+
+    @if (loadingLeaderboard()) {
+      <div class="lb-widget-empty">Loading…</div>
+    } @else if (leaderboardPreview().length === 0) {
+      <div class="lb-widget-empty">Nobody yet — be the first 🥚</div>
+    } @else {
+      @for (entry of leaderboardPreview(); track entry.id; let i = $index) {
+        <div class="lb-widget-row" [class.lb-widget-row-me]="isCurrentUser(entry.id)">
+          <div class="lb-widget-rank">{{ rankLabel(i) }}</div>
+          <div class="lb-widget-name">{{ entry.display_name }}</div>
+          <div class="lb-widget-clicks">{{ formatNumber(entry.total_clicks) }}</div>
+        </div>
+      }
+    }
+
+    @if (auth.isSignedIn()) {
+      <a routerLink="/leaderboard" class="lb-widget-link">View Full Leaderboard →</a>
+    } @else {
+      <button class="lb-widget-cta" (click)="showAuthModal.set(true)">Sign In &amp; Join →</button>
+    }
+  </aside>
 
   </div>
 </div>
