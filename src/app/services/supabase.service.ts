@@ -197,16 +197,6 @@ export class SupabaseService {
     return data as UserPerksRow | null;
   }
 
-  /** Upsert part of the signed-in user's perk row (no-op when signed out) */
-  async upsertUserPerks(patch: Partial<Omit<UserPerksRow, 'user_id'>>): Promise<void> {
-    const user = this.currentUser();
-    if (!user) return;
-    const { error } = await this.client
-      .from('user_perks')
-      .upsert({ user_id: user.id, ...patch }, { onConflict: 'user_id' });
-    if (error) console.error('upsertUserPerks failed:', error.message);
-  }
-
   /** Atomically decrement the signed-in user's purchased-click balance */
   async spendExtraClicks(amount: number): Promise<void> {
     if (!this.currentUser()) return;
@@ -222,15 +212,6 @@ export class SupabaseService {
       .order('created_at', { ascending: true })
       .limit(50);
     return (data ?? []).map(r => r.name as string);
-  }
-
-  async upsertEggName(name: string): Promise<void> {
-    const user = this.currentUser();
-    if (!user) return;
-    const { error } = await this.client
-      .from('egg_names')
-      .upsert({ user_id: user.id, name: name.slice(0, 40) }, { onConflict: 'user_id' });
-    if (error) console.error('upsertEggName failed:', error.message);
   }
 
   async getDailyClicks(userId: string, date: string): Promise<number> {

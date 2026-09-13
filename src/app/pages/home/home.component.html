@@ -49,6 +49,9 @@
       (click)="onEggClick($event)"
       (touchend)="onEggClick($event)"
     >
+      @if (!supabase.isLoading() && myClicks() === 0) {
+        <div class="click-bubble" aria-hidden="true">Click me!</div>
+      }
       @if (supabase.isLoading()) {
         <div class="egg-skeleton"></div>
       } @else {

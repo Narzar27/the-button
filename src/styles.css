@@ -122,6 +122,27 @@ html, body {
   background: radial-gradient(circle, rgba(255,107,107,0.5) 0%, transparent 70%);
 }
 .egg-wrap:hover::before { opacity: 1; }
+.click-bubble {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translate(-50%, -100%);
+  background: var(--yellow); color: var(--dark);
+  font-family: 'Fredoka One', cursive; font-size: 14px;
+  padding: 7px 16px; border-radius: 14px;
+  white-space: nowrap; pointer-events: none; z-index: 2;
+  box-shadow: 0 6px 16px rgba(255,217,61,0.4);
+  animation: bubble-bob 1.8s ease-in-out infinite;
+}
+.click-bubble::after {
+  content: ''; position: absolute; left: 50%; bottom: -6px;
+  transform: translateX(-50%);
+  width: 12px; height: 12px; background: var(--yellow);
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+}
+@keyframes bubble-bob {
+  0%, 100% { transform: translate(-50%, -100%) translateY(0); }
+  50% { transform: translate(-50%, -100%) translateY(-6px); }
+}
 .egg-skeleton {
   width: 200px; height: 250px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
   background: rgba(255,255,255,0.06); animation: pulse 1.5s ease-in-out infinite;
@@ -419,7 +440,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, .lb-tab:focus-visibl
 
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
-  .floater, .crack-particle, .egg-skeleton,
+  .floater, .crack-particle, .egg-skeleton, .click-bubble,
   .egg-wiggle, .egg-crack-flash::after, .toast, .progress-fill,
   .diamond-overlay::before, .diamond-overlay::after, .egg-name-banner span {
     animation: none !important;

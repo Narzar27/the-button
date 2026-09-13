@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { AnonIdentityService } from './anon-identity.service';
 import { SupabaseService } from './supabase.service';
 
-const DAILY_LIMIT = 5;
+const DAILY_LIMIT = 3;
 const EXTRA_CLICKS_KEY = 'egg_extra_clicks';
 const UNLIMITED_UNTIL_KEY = 'egg_unlimited_until';
 
@@ -65,27 +65,26 @@ export class ClickLimitService {
       localStorage.setItem(todayKey(), String(serverCount));
     }
 
-    if (perksRow) {
-      // The server balance is authoritative (webhook credits, spend RPC debits).
-      // Right after a purchase the local optimistic credit may briefly lead the
-      // server (webhook still in flight) — take the higher value in that window.
-      const server = perksRow.extra_clicks;
-      const next = Date.now() < this.optimisticUntil ? Math.max(this._extraClicks(), server) : server;
-      this._extraClicks.set(next);
-      localStorage.setItem(EXTRA_CLICKS_KEY, String(next));
+    // The server balance is authoritative — it's only ever written by the
+    // verified Paddle webhook (credit) or spend_extra_clicks (debit), so the
+    // client can fully trust it. A missing row just means nothing's been
+    // purchased yet.
+    const server = perksRow?.extra_clicks ?? 0;
+    const serverUntil = perksRow?.unlimited_until ? Date.parse(perksRow.unlimited_until) : 0;
 
-      // Unlimited window only ever extends, so the later timestamp wins
-      const serverUntil = perksRow.unlimited_until ? Date.parse(perksRow.unlimited_until) : 0;
-      if (serverUntil > this._unlimitedUntil()) {
-        this._unlimitedUntil.set(serverUntil);
-        localStorage.setItem(UNLIMITED_UNTIL_KEY, String(serverUntil));
-      } else if (this._unlimitedUntil() > serverUntil && Date.now() >= this.optimisticUntil) {
-        this.seedServerBalance();
-      }
-    } else if (this._extraClicks() > 0 || this._unlimitedUntil() > Date.now()) {
-      // No server row yet: seed it from purchases made before the webhook era
-      this.seedServerBalance();
+    if (Date.now() < this.optimisticUntil) {
+      // Right after a purchase the local optimistic credit may briefly lead
+      // the server (webhook still in flight) — take the higher value.
+      this._extraClicks.set(Math.max(this._extraClicks(), server));
+      if (serverUntil > this._unlimitedUntil()) this._unlimitedUntil.set(serverUntil);
+    } else {
+      // Optimistic window has passed — adopt the server's value outright,
+      // even if lower (covers a purchase that never actually credited).
+      this._extraClicks.set(server);
+      this._unlimitedUntil.set(serverUntil);
     }
+    localStorage.setItem(EXTRA_CLICKS_KEY, String(this._extraClicks()));
+    localStorage.setItem(UNLIMITED_UNTIL_KEY, String(this._unlimitedUntil()));
   }
 
   isUnlimited(): boolean {
@@ -180,16 +179,5 @@ export class ClickLimitService {
       this.pendingSpends = 0;
       this.supabase.spendExtraClicks(n).catch(console.error);
     }, 1500);
-  }
-
-  /** One-time seeding of the server row from pre-webhook local purchases */
-  private seedServerBalance(): void {
-    const until = this._unlimitedUntil();
-    this.supabase.upsertUserPerks({
-      extra_clicks: this._extraClicks(),
-      // Only send the window when we have one, so a device that never bought
-      // unlimited can't null out a pass purchased elsewhere
-      ...(until > 0 ? { unlimited_until: new Date(until).toISOString() } : {}),
-    }).catch(console.error);
   }
 }
