@@ -45,6 +45,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly floaters = signal<Floater[]>([]);
   readonly particles = signal<Particle[]>([]);
   readonly myClicks = signal(0);
+  /** Session-only — gates the "Click me!" hint, independent of lifetime totals */
+  readonly hasClickedThisSession = signal(false);
 
   private wiggleTimer: any;
   private crackTimer: any;
@@ -98,6 +100,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     // Optimistic local update
     this.supabase.egg.update(e => e ? { ...e, current_clicks: e.current_clicks + 1 } : e);
     this.myClicks.update(n => n + 1);
+    this.hasClickedThisSession.set(true);
 
     // Animate
     this.wiggling.set(true);
