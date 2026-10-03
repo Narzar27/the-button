@@ -202,11 +202,14 @@ html, body {
 .egg-name-banner {
   position: absolute; top: 44%; left: 0; right: 0;
   overflow: hidden; pointer-events: none; z-index: 2;
+  padding: 5px 0;
+  /* Dark fading band so white text stays readable against a pale egg */
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.4) 15%, rgba(0,0,0,0.4) 85%, transparent);
 }
 .egg-name-banner span {
   display: inline-block; white-space: nowrap;
   font-family: 'Fredoka One', cursive; font-size: 18px; color: white;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.45);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
   animation: egg-name-scroll 7s linear infinite;
 }
 @keyframes egg-name-scroll {
