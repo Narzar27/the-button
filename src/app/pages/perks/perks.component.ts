@@ -23,7 +23,7 @@ const PERKS: Perk[] = [
   { id: 2,  priceId: p.clicks100,       icon: '💯', name: '100 Extra Clicks',         desc: 'Get 100 bonus clicks — go wild',                    price: '$4.99',    type: 'one-time',     limited: false },
   { id: 3,  priceId: p.unlimited24h,    icon: '🌙', name: 'Unlimited 24h',            desc: 'Click as much as you want for 24 hours',           price: '$1.99',    type: 'one-time',     limited: false },
   { id: 4,  priceId: p.unlimitedMonth,   icon: '♾️', name: 'Monthly Unlimited',        desc: 'Unlimited clicks every day this month',            price: '$4.99/mo', type: 'subscription', limited: false },
-  { id: 5,  priceId: p.crackBadge,      icon: '🏅', name: '"I Cracked Egg #1"',       desc: 'Exclusive badge for Egg #1 crackers only',        price: '$1.99',    type: 'one-time',     limited: true  },
+  { id: 5,  priceId: p.crackBadge,      icon: '🏅', name: 'Founding Clicker',         desc: 'Exclusive badge for our earliest supporters',      price: '$1.99',    type: 'one-time',     limited: true  },
   { id: 6,  priceId: p.nameOnEgg,       icon: '👑', name: 'Name on the Egg',          desc: 'Your name scrolls across the egg forever',        price: '$2.99',    type: 'one-time',     limited: false },
   { id: 7,  priceId: p.goldenCursor,    icon: '✨', name: 'Golden Cursor',            desc: 'Your cursor glows gold while clicking',           price: '$1.99',    type: 'one-time',     limited: false },
   { id: 8,  priceId: p.diamondSkin,     icon: '💎', name: 'Diamond Egg Skin',         desc: 'The egg shimmers with diamonds for you',          price: '$3.99',    type: 'one-time',     limited: false },

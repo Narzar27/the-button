@@ -53,6 +53,9 @@ const AVATAR_COLORS = ['#FFD93D', '#FF6B6B', '#4D96FF', '#C77DFF', '#6BCB77', '#
               </div>
               <div class="lb-name-wrap">
                 <span class="lb-name">{{ entry.display_name }}</span>
+                @if (entry.crack_badge) {
+                  <span title="Founding Clicker">🏅</span>
+                }
                 @if (isCurrentUser(entry.id)) {
                   <span class="lb-you">(you)</span>
                 }

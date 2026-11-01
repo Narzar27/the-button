@@ -17,6 +17,7 @@ export interface LeaderboardEntry {
   display_name: string;
   total_clicks: number;
   eggs_cracked: number;
+  crack_badge: boolean;
 }
 
 export interface UserPerksRow {
@@ -132,7 +133,7 @@ export class SupabaseService {
   async getLeaderboard(_tab: 'alltime' | 'thisegg' | 'today' | 'country' = 'alltime'): Promise<LeaderboardEntry[]> {
     const { data } = await this.client
       .from('users')
-      .select('id, display_name, total_clicks, eggs_cracked')
+      .select('id, display_name, total_clicks, eggs_cracked, crack_badge')
       .order('total_clicks', { ascending: false })
       .limit(20);
     return (data ?? []) as LeaderboardEntry[];
@@ -141,7 +142,7 @@ export class SupabaseService {
   async getBreaksLeaderboard(): Promise<LeaderboardEntry[]> {
     const { data } = await this.client
       .from('users')
-      .select('id, display_name, total_clicks, eggs_cracked')
+      .select('id, display_name, total_clicks, eggs_cracked, crack_badge')
       .order('eggs_cracked', { ascending: false })
       .limit(20);
     return (data ?? []) as LeaderboardEntry[];

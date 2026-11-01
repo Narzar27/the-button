@@ -36,7 +36,7 @@
     <div class="badge-row">
       <div class="egg-number">🥚 World Record Egg</div>
       @if (perks.hasCrackBadge()) {
-        <div class="egg-number owned-badge">🏅 Egg #1 Cracker</div>
+        <div class="egg-number owned-badge">🏅 Founding Clicker</div>
       }
     </div>
     <div class="egg-title">The Most Clicked Egg</div>
@@ -160,7 +160,10 @@
       @for (entry of leaderboardPreview(); track entry.id; let i = $index) {
         <div class="lb-widget-row" [class.lb-widget-row-me]="isCurrentUser(entry.id)">
           <div class="lb-widget-rank">{{ rankLabel(i) }}</div>
-          <div class="lb-widget-name">{{ entry.display_name }}</div>
+          <div class="lb-widget-name">
+            {{ entry.display_name }}
+            @if (entry.crack_badge) { <span title="Founding Clicker">🏅</span> }
+          </div>
           <div class="lb-widget-clicks">{{ formatNumber(entry.total_clicks) }}</div>
         </div>
       }
