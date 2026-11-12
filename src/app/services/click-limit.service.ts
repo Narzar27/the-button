@@ -65,12 +65,23 @@ export class ClickLimitService {
       localStorage.setItem(todayKey(), String(serverCount));
     }
 
-    // The server balance is authoritative — it's only ever written by the
-    // verified Paddle webhook (credit) or spend_extra_clicks (debit), so the
-    // client can fully trust it. A missing row just means nothing's been
-    // purchased yet.
-    const server = perksRow?.extra_clicks ?? 0;
-    const serverUntil = perksRow?.unlimited_until ? Date.parse(perksRow.unlimited_until) : 0;
+    this.reconcilePerks(perksRow?.extra_clicks ?? 0, perksRow?.unlimited_until ?? null);
+  }
+
+  /** Guest equivalent of syncFromServer — identified by the device's anon_id */
+  private async syncGuestFromServer(anonId: string): Promise<void> {
+    const row = await this.supabase.getGuestPerks(anonId);
+    this.reconcilePerks(row?.extra_clicks ?? 0, row?.unlimited_until ?? null);
+  }
+
+  /**
+   * The server balance is authoritative — it's only ever written by the
+   * verified Paddle webhook (credit) or the spend RPC (debit), so the
+   * client can fully trust it. A missing row just means nothing's been
+   * purchased yet.
+   */
+  private reconcilePerks(server: number, serverUntilIso: string | null): void {
+    const serverUntil = serverUntilIso ? Date.parse(serverUntilIso) : 0;
 
     if (Date.now() < this.optimisticUntil) {
       // Right after a purchase the local optimistic credit may briefly lead
@@ -165,9 +176,11 @@ export class ClickLimitService {
   private beginOptimisticWindow(): void {
     this.optimisticUntil = Date.now() + 60_000;
     const user = this.supabase.currentUser();
-    if (!user) return;
-    setTimeout(() => this.syncFromServer(user.id).catch(console.error), 6_000);
-    setTimeout(() => this.syncFromServer(user.id).catch(console.error), 25_000);
+    const resync = user
+      ? () => this.syncFromServer(user.id)
+      : () => this.syncGuestFromServer(this.anon.anonId());
+    setTimeout(() => resync().catch(console.error), 6_000);
+    setTimeout(() => resync().catch(console.error), 25_000);
   }
 
   /** Batch extra-click spends into one atomic decrement RPC */
@@ -177,7 +190,11 @@ export class ClickLimitService {
     this.spendTimer = setTimeout(() => {
       const n = this.pendingSpends;
       this.pendingSpends = 0;
-      this.supabase.spendExtraClicks(n).catch(console.error);
+      const user = this.supabase.currentUser();
+      const spend = user
+        ? this.supabase.spendExtraClicks(n)
+        : this.supabase.spendGuestExtraClicks(this.anon.anonId(), n);
+      spend.catch(console.error);
     }, 1500);
   }
 }

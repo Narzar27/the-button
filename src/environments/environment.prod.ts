@@ -16,6 +16,7 @@ export const environment = {
       goldenCursor:    'pri_01kpqk5ccxs3yreysrv53m0pf5',
       crackBadge:      'pri_01kpqk6zz6kgh2vepepk59aqwz',
       diamondSkin:     'pri_01kpqk8t53a836f29bnp3rpwce',
+      supportEgg:      'pri_01m78pkfa0qkd7qw4mm7g1f900',
     },
   },
 };

@@ -27,6 +27,7 @@ const PERKS: Perk[] = [
   { id: 6,  priceId: p.nameOnEgg,       icon: '👑', name: 'Name on the Egg',          desc: 'Your name scrolls across the egg forever',        price: '$2.99',    type: 'one-time',     limited: false },
   { id: 7,  priceId: p.goldenCursor,    icon: '✨', name: 'Golden Cursor',            desc: 'Your cursor glows gold while clicking',           price: '$1.99',    type: 'one-time',     limited: false },
   { id: 8,  priceId: p.diamondSkin,     icon: '💎', name: 'Diamond Egg Skin',         desc: 'The egg shimmers with diamonds for you',          price: '$3.99',    type: 'one-time',     limited: false },
+  { id: 9,  priceId: p.supportEgg,      icon: '💛', name: 'Support the Egg',          desc: 'Just here for the vibes? Chip in a dollar.',       price: '$1.00',    type: 'one-time',     limited: false },
 ];
 
 @Component({
@@ -50,7 +51,8 @@ const PERKS: Perk[] = [
 
       @if (!auth.isSignedIn()) {
         <div class="perks-notice">
-          🔒 <strong>Sign in</strong> to purchase perks and track them across devices.
+          <span>💳 No account needed to buy — Paddle just needs your email. Sign in only if you want perks to follow you across devices.</span>
+          <button class="notice-signin-btn" (click)="showAuthModal.set(true)">Sign In</button>
         </div>
       }
 
@@ -87,9 +89,16 @@ const PERKS: Perk[] = [
   styles: [`
     :host { display: block; position: relative; }
     .perks-notice {
+      display: flex; align-items: center; justify-content: space-between; gap: 14px;
+      flex-wrap: wrap;
       background: rgba(255,217,61,0.08); border: 1px solid rgba(255,217,61,0.2);
       border-radius: 12px; padding: 12px 16px; margin-bottom: 20px;
       font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.7);
+    }
+    .notice-signin-btn {
+      flex-shrink: 0; padding: 7px 16px; border-radius: 99px; border: none;
+      background: #FFD93D; color: #2D2D2D; font-weight: 800; font-size: 12px;
+      cursor: pointer; font-family: 'Nunito', sans-serif;
     }
     .perks-footer {
       text-align: center; margin-top: 28px; font-size: 12px;
@@ -148,12 +157,17 @@ export class PerkStoreComponent {
       this.showToast('✨ You already own this perk!');
       return;
     }
-    if (!this.auth.isSignedIn()) {
-      this.showAuthModal.set(true);
-      return;
+
+    let extra: Record<string, string> | undefined;
+    if (perk.priceId === p.nameOnEgg && !this.auth.isSignedIn()) {
+      // Guests have no account name to fall back on — ask up front
+      const name = window.prompt('What name should scroll across the egg?')?.trim();
+      if (!name) return;
+      extra = { eggName: name.slice(0, 40) };
     }
+
     this.buying.set(perk.id);
-    this.paddle.openCheckout(perk.priceId).finally(() => {
+    this.paddle.openCheckout(perk.priceId, extra).finally(() => {
       if (!this.paddle.purchaseComplete()) this.buying.set(null);
     });
   }
@@ -168,6 +182,7 @@ export class PerkStoreComponent {
       case p.nameOnEgg:      return '👑 Your name now scrolls across the egg!';
       case p.goldenCursor:   return '✨ Golden cursor equipped — clicks now sparkle gold!';
       case p.diamondSkin:    return '💎 Diamond skin applied — your egg is shimmering!';
+      case p.supportEgg:     return '💛 Thank you for supporting the egg!';
       default:               return '🎉 Purchase complete! Your perk is now active.';
     }
   }

@@ -5,6 +5,7 @@ import { SupabaseService } from './supabase.service';
 import { ClickLimitService } from './click-limit.service';
 import { PerksService } from './perks.service';
 import { AuthService } from './auth.service';
+import { AnonIdentityService } from './anon-identity.service';
 
 declare const Paddle: any;
 
@@ -15,12 +16,16 @@ export class PaddleService {
   private clickLimit = inject(ClickLimitService);
   private perks = inject(PerksService);
   private auth = inject(AuthService);
+  private anon = inject(AnonIdentityService);
   private _loadPromise: Promise<void> | null = null;
 
   readonly purchaseComplete = signal<{ priceId: string } | null>(null);
   readonly loadError = signal(false);
 
-  async openCheckout(priceId: string): Promise<void> {
+  /** No account needed — Paddle collects the buyer's email itself. Signed-in
+   *  buyers credit to their account; everyone else credits to this device's
+   *  anon_id. `extra` merges in perk-specific data (e.g. a guest's chosen egg name). */
+  async openCheckout(priceId: string, extra?: Record<string, string>): Promise<void> {
     if (!isPlatformBrowser(this.platformId)) return;
     if (priceId.includes('REPLACE_ME')) return;
 
@@ -32,10 +37,11 @@ export class PaddleService {
     }
 
     const userId = this.supabase.currentUser()?.id ?? null;
-    Paddle.Checkout.open({
-      items: [{ priceId, quantity: 1 }],
-      customData: userId ? { userId } : undefined,
-    });
+    const customData = {
+      ...(userId ? { userId } : { anonId: this.anon.anonId() }),
+      ...extra,
+    };
+    Paddle.Checkout.open({ items: [{ priceId, quantity: 1 }], customData });
   }
 
   private load(): Promise<void> {
@@ -67,7 +73,8 @@ export class PaddleService {
       eventCallback: (event: any) => {
         if (event.name === 'checkout.completed') {
           const priceId = event.data?.items?.[0]?.price_id ?? '';
-          this.creditPurchase(priceId);
+          const eggName = event.data?.custom_data?.eggName ?? null;
+          this.creditPurchase(priceId, eggName);
           this.purchaseComplete.set({ priceId });
         }
       },
@@ -76,7 +83,7 @@ export class PaddleService {
   }
 
   /** Apply the perk locally as soon as checkout completes so it's usable immediately. */
-  private creditPurchase(priceId: string): void {
+  private creditPurchase(priceId: string, guestEggName: string | null): void {
     const p = environment.paddle.prices;
     switch (priceId) {
       case p.clicks10:       this.clickLimit.addExtraClicks(10); break;
@@ -86,7 +93,10 @@ export class PaddleService {
       case p.crackBadge:     this.perks.grant('crackBadge'); break;
       case p.goldenCursor:   this.perks.grant('goldenCursor'); break;
       case p.diamondSkin:    this.perks.grant('diamondSkin'); break;
-      case p.nameOnEgg:      this.perks.grant('nameOnEgg', this.auth.displayName() ?? 'Anonymous Cracker'); break;
+      case p.nameOnEgg:
+        this.perks.grant('nameOnEgg', this.auth.displayName() ?? guestEggName ?? 'Anonymous Cracker');
+        break;
+      // p.supportEgg: nothing to grant — just a thank-you
     }
   }
 }

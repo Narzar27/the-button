@@ -1,12 +1,14 @@
 import {
   Component, inject, signal, computed, effect, OnInit, OnDestroy, PLATFORM_ID,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SupabaseService, LeaderboardEntry } from '../../services/supabase.service';
 import { ClickLimitService } from '../../services/click-limit.service';
 import { PerksService } from '../../services/perks.service';
 import { AuthService } from '../../services/auth.service';
+import { PaddleService } from '../../services/paddle.service';
+import { environment } from '../../../environments/environment';
 import { AuthModalComponent } from '../../components/auth-modal/auth-modal.component';
 import { EggComponent } from '../../components/egg/egg.component';
 
@@ -19,7 +21,7 @@ let particleId = 0;
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, AuthModalComponent, EggComponent],
+  imports: [RouterLink, AuthModalComponent, EggComponent, DecimalPipe],
   templateUrl: './home.component.html',
   host: { '[class.golden-cursor]': 'perks.hasGoldenCursor()' },
 })
@@ -29,6 +31,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly clickLimit = inject(ClickLimitService);
   readonly perks = inject(PerksService);
   readonly auth = inject(AuthService);
+  private paddle = inject(PaddleService);
 
   readonly showAuthModal = signal(false);
   readonly showShareToast = signal(false);
@@ -52,6 +55,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   readonly leaderboardPreview = signal<LeaderboardEntry[]>([]);
   readonly loadingLeaderboard = signal(true);
+  readonly buyingNameOnEgg = signal(false);
 
   private wiggleTimer: any;
   private crackTimer: any;
@@ -191,6 +195,21 @@ export class HomeComponent implements OnInit, OnDestroy {
         setTimeout(() => this.showShareToast.set(false), 2000);
       }
     } catch {}
+  }
+
+  async buyNameOnEgg(): Promise<void> {
+    let extra: Record<string, string> | undefined;
+    if (!this.auth.isSignedIn()) {
+      const name = window.prompt('What name should scroll across the egg?')?.trim();
+      if (!name) return;
+      extra = { eggName: name.slice(0, 40) };
+    }
+    this.buyingNameOnEgg.set(true);
+    try {
+      await this.paddle.openCheckout(environment.paddle.prices.nameOnEgg, extra);
+    } finally {
+      this.buyingNameOnEgg.set(false);
+    }
   }
 
   trackFloater(_: number, f: Floater) { return f.id; }

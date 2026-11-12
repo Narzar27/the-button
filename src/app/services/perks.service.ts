@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject, PLATFORM_ID, effect } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { SupabaseService } from './supabase.service';
+import { AnonIdentityService } from './anon-identity.service';
 
 export type CosmeticPerk = 'goldenCursor' | 'diamondSkin' | 'crackBadge' | 'nameOnEgg';
 
@@ -16,6 +17,7 @@ const OWNED_PERKS_KEY = 'egg_owned_perks';
 export class PerksService {
   private platformId = inject(PLATFORM_ID);
   private supabase = inject(SupabaseService);
+  private anon = inject(AnonIdentityService);
 
   private _owned = signal<Record<string, boolean | string>>({});
 
@@ -43,6 +45,11 @@ export class PerksService {
         this.syncWithServer(user.id).catch(console.error);
       }
     });
+
+    // Guests bought without an account: catch a purchase that credited
+    // server-side but whose local optimistic grant never fired (e.g. the
+    // checkout.completed event didn't reach this tab)
+    this.syncWithGuestServer(this.anon.anonId()).catch(console.error);
   }
 
   has(perk: CosmeticPerk): boolean {
@@ -73,5 +80,17 @@ export class PerksService {
     if (row?.diamond_skin) this.setLocal('diamondSkin', true);
     if (row?.crack_badge) this.setLocal('crackBadge', true);
     if (row?.egg_name) this.setLocal('nameOnEgg', row.egg_name);
+  }
+
+  /** Guest equivalent, keyed by this device's anon_id instead of an account */
+  private async syncWithGuestServer(anonId: string): Promise<void> {
+    const [row, name] = await Promise.all([
+      this.supabase.getGuestPerks(anonId),
+      this.supabase.getGuestEggName(anonId),
+    ]);
+    if (row?.golden_cursor) this.setLocal('goldenCursor', true);
+    if (row?.diamond_skin) this.setLocal('diamondSkin', true);
+    if (row?.crack_badge) this.setLocal('crackBadge', true);
+    if (name) this.setLocal('nameOnEgg', name);
   }
 }

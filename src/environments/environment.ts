@@ -16,6 +16,7 @@ export const environment = {
       goldenCursor:    'pri_01kpqk5ccxs3yreysrv53m0pf5', // Golden Cursor — $1.99
       crackBadge:      'pri_01kpqk6zz6kgh2vepepk59aqwz', // Crack Badge (limited) — $1.99
       diamondSkin:     'pri_01kpqk8t53a836f29bnp3rpwce', // Diamond Egg Skin — $3.99
+      supportEgg:      'pri_01m78pkfa0qkd7qw4mm7g1f900', // Support the Egg — $1
     },
   },
 };

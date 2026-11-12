@@ -83,15 +83,16 @@
       }
     </div>
 
-    <!-- Progress toward the crack -->
+    <!-- Progress toward the next milestone -->
     <div class="progress-wrap">
       <div class="progress-top">
-        <span>{{ formatNumber(supabase.globalClicks()) }} clicks</span>
-        <span>Goal: {{ formatNumber(supabase.targetClicks()) }}</span>
+        <span>{{ formatNumber(supabase.globalClicks()) }} / {{ formatNumber(supabase.nextMilestone()) }}</span>
+        <span>{{ supabase.progressPct() | number:'1.0-0' }}%</span>
       </div>
       <div class="progress-track">
         <div class="progress-fill" [style.width.%]="supabase.progressPct()"></div>
       </div>
+      <div class="progress-longterm">Long-term goal: {{ formatNumber(supabase.targetClicks()) }} clicks</div>
     </div>
 
     <!-- Click button -->
@@ -100,6 +101,20 @@
             [disabled]="!clickLimit.canClick() || supabase.isLoading()">
       {{ clickLimit.canClick() ? '🥚 Click It!' : 'No clicks left today' }}
     </button>
+
+    <!-- Lead with Name on the Egg — the perk with the emotional pull -->
+    @if (perks.eggName()) {
+      <div class="name-cta name-cta-owned">👑 Your name <strong>{{ perks.eggName() }}</strong> is on the egg!</div>
+    } @else {
+      <div class="name-cta">
+        <button class="name-cta-btn" [disabled]="buyingNameOnEgg()" (click)="buyNameOnEgg()">
+          👑 Put your name on the egg — $2.99
+        </button>
+        @if (eggNames().length > 0) {
+          <div class="name-cta-names">Already on it: {{ eggNames().slice(-6).join(' · ') }}</div>
+        }
+      </div>
+    }
 
     <!-- Daily info -->
     <div class="daily-info">

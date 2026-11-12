@@ -30,6 +30,34 @@ export interface UserPerksRow {
   egg_name: string | null;
 }
 
+export interface GuestPerksRow {
+  anon_id: string;
+  extra_clicks: number;
+  unlimited_until: string | null;
+  golden_cursor: boolean;
+  diamond_skin: boolean;
+  crack_badge: boolean;
+}
+
+// Near-term goals shown to visitors — round numbers that actually feel
+// reachable, instead of a 4-billion bar that never visibly moves. Always
+// ends at the real target. Also drives the egg's crack stages below.
+const MILESTONES = [
+  250, 500, 1_000,
+  2_500, 5_000, 10_000,
+  25_000, 50_000, 100_000,
+  250_000, 500_000, 1_000_000,
+  2_500_000, 5_000_000, 10_000_000,
+  25_000_000, 50_000_000, 100_000_000,
+  250_000_000, 500_000_000, 1_000_000_000,
+  2_500_000_000,
+  4_000_000_000,
+];
+
+// Egg visibly cracks through its 8 stages across the first few milestones,
+// then holds at "about to hatch" for the long haul until the real 4B goal.
+const CRACK_MILESTONES = [0, 250, 500, 1_000, 2_500, 5_000, 10_000, 25_000, 50_000];
+
 @Injectable({ providedIn: 'root' })
 export class SupabaseService {
   private platformId = inject(PLATFORM_ID);
@@ -41,16 +69,26 @@ export class SupabaseService {
   readonly currentUser = signal<User | null>(null);
 
   readonly crackStage = computed(() => {
-    const e = this.egg();
-    if (!e || e.target_clicks === 0) return 0;
-    const progress = e.current_clicks / e.target_clicks;
-    return Math.min(Math.floor(progress * 9), 8);
+    const clicks = this.globalClicks();
+    let stage = 0;
+    for (let i = 1; i < CRACK_MILESTONES.length; i++) {
+      if (clicks < CRACK_MILESTONES[i]) break;
+      stage = i;
+    }
+    return stage;
   });
 
+  /** Next round-number goal to show (always ends at the real 4B target) */
+  readonly nextMilestone = computed(() => {
+    const clicks = this.globalClicks();
+    for (const m of MILESTONES) if (clicks < m) return m;
+    return this.targetClicks();
+  });
+
+  /** Progress toward nextMilestone — what actually looks like it's moving */
   readonly progressPct = computed(() => {
-    const e = this.egg();
-    if (!e || e.target_clicks === 0) return 0;
-    return Math.min((e.current_clicks / e.target_clicks) * 100, 100);
+    const next = this.nextMilestone();
+    return next > 0 ? Math.min((this.globalClicks() / next) * 100, 100) : 0;
   });
 
   readonly globalClicks = computed(() => this.egg()?.current_clicks ?? 0);
@@ -205,14 +243,41 @@ export class SupabaseService {
     if (error) console.error('spend_extra_clicks failed:', error.message);
   }
 
-  /** Names purchased via "Name on the Egg" — visible to everyone */
-  async getEggNames(): Promise<string[]> {
+  /** Guest equivalent of getUserPerks — identified by the device's anon_id */
+  async getGuestPerks(anonId: string): Promise<GuestPerksRow | null> {
     const { data } = await this.client
-      .from('egg_names')
+      .from('guest_perks')
+      .select('*')
+      .eq('anon_id', anonId)
+      .maybeSingle();
+    return data as GuestPerksRow | null;
+  }
+
+  /** Guest equivalent of spendExtraClicks */
+  async spendGuestExtraClicks(anonId: string, amount: number): Promise<void> {
+    const { error } = await this.client.rpc('spend_guest_extra_clicks', { gid: anonId, amount });
+    if (error) console.error('spend_guest_extra_clicks failed:', error.message);
+  }
+
+  /** This device's own purchased egg name, if bought as a guest */
+  async getGuestEggName(anonId: string): Promise<string | null> {
+    const { data } = await this.client
+      .from('guest_egg_names')
       .select('name')
-      .order('created_at', { ascending: true })
-      .limit(50);
-    return (data ?? []).map(r => r.name as string);
+      .eq('anon_id', anonId)
+      .maybeSingle();
+    return data?.name ?? null;
+  }
+
+  /** Names purchased via "Name on the Egg" — visible to everyone, signed in or not */
+  async getEggNames(): Promise<string[]> {
+    const [accounts, guests] = await Promise.all([
+      this.client.from('egg_names').select('name, created_at').order('created_at', { ascending: true }).limit(50),
+      this.client.from('guest_egg_names').select('name, created_at').order('created_at', { ascending: true }).limit(50),
+    ]);
+    const rows = [...(accounts.data ?? []), ...(guests.data ?? [])]
+      .sort((a, b) => a.created_at.localeCompare(b.created_at));
+    return rows.map(r => r.name as string);
   }
 
   async getDailyClicks(userId: string, date: string): Promise<number> {

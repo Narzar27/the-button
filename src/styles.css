@@ -261,6 +261,11 @@ html, body {
   box-shadow: 0 0 10px rgba(255,217,61,0.5);
   min-width: 2px;
 }
+.progress-longterm {
+  margin-top: 8px; font-size: 10px; font-weight: 700;
+  color: rgba(255,255,255,0.35); text-align: center;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
 
 /* ── Click button ── */
 .click-btn {
@@ -275,6 +280,29 @@ html, body {
 .click-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(255,159,28,0.5); }
 .click-btn:active:not(:disabled) { transform: translateY(1px) scale(0.97); }
 .click-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Name on the Egg CTA — leads with the perk that has emotional pull ── */
+.name-cta { margin-bottom: 14px; }
+.name-cta-btn {
+  background: linear-gradient(135deg, #FFE066, #FFD700);
+  border: none; border-radius: 99px; padding: 11px 24px;
+  font-family: 'Fredoka One', cursive; font-size: 15px; color: #2D2D2D;
+  cursor: pointer; transition: all 0.15s; box-shadow: 0 4px 16px rgba(255,217,61,0.35);
+}
+.name-cta-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(255,217,61,0.45); }
+.name-cta-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.name-cta-names {
+  margin-top: 8px; font-size: 11px; font-weight: 700;
+  color: rgba(255,255,255,0.4); max-width: 320px; margin-left: auto; margin-right: auto;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.name-cta-owned {
+  font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.7);
+}
+.name-cta-owned strong { color: #FFD700; }
+@media (prefers-reduced-motion: reduce) {
+  .name-cta-btn:hover { transform: none; }
+}
 
 /* ── Daily info ── */
 .daily-info {

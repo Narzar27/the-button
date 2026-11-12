@@ -24,6 +24,7 @@ const PRICE_GRANTS: Record<string, PerkGrant> = {
   pri_01kpqk5ccxs3yreysrv53m0pf5: { key: 'goldenCursor', golden: true },
   pri_01kpqk6zz6kgh2vepepk59aqwz: { key: 'crackBadge', badge: true },
   pri_01kpqk8t53a836f29bnp3rpwce: { key: 'diamondSkin', diamond: true },
+  pri_01m78pkfa0qkd7qw4mm7g1f900: { key: 'supportEgg' }, // $1 thank-you, no perk attached
 };
 
 Deno.serve(async (req) => {
@@ -54,8 +55,9 @@ Deno.serve(async (req) => {
   const transactionId: string = data.id;
   const customerId: string | null = data.customer_id ?? null;
   const customData = data.custom_data ?? {};
-  // paddle.service.ts sends { userId } (camelCase)
+  // paddle.service.ts sends { userId } for signed-in buyers, { anonId } for guests
   const userId: string | null = customData.userId ?? customData.user_id ?? null;
+  const anonId: string | null = userId ? null : (customData.anonId ?? customData.anon_id ?? null);
 
   const items: any[] = data.items ?? [];
   const firstGrant = PRICE_GRANTS[items[0]?.price?.id ?? ''];
@@ -67,6 +69,7 @@ Deno.serve(async (req) => {
       {
         transaction_id: transactionId,
         user_id: userId,
+        anon_id: anonId,
         paddle_customer_id: customerId,
         product_type: firstGrant?.key ?? (items[0]?.price?.id ?? 'unknown'),
         price_id: items[0]?.price?.id ?? '',
@@ -85,9 +88,10 @@ Deno.serve(async (req) => {
     return new Response('Already processed', { status: 200 });
   }
 
-  if (!userId) {
-    // Purchase recorded, but no account to credit (shouldn't happen — store requires sign-in)
-    console.warn('transaction without userId:', transactionId);
+  if (!userId && !anonId) {
+    // Purchase recorded, but no identity to credit (shouldn't happen —
+    // the client always sends one or the other)
+    console.warn('transaction without any identity:', transactionId);
     return new Response('OK', { status: 200 });
   }
 
@@ -108,30 +112,51 @@ Deno.serve(async (req) => {
     wantsEggName ||= !!grant.eggName;
   }
 
-  let eggName: string | null = null;
-  if (wantsEggName) {
-    const { data: userRow } = await supabase
-      .from('users')
-      .select('display_name')
-      .eq('id', userId)
-      .maybeSingle();
-    eggName = userRow?.display_name ?? 'Anonymous Cracker';
+  // Nothing to credit (e.g. the $1 support-only purchase) — purchase row is enough
+  if (!addClicks && !unlimitedHours && !golden && !diamond && !badge && !wantsEggName) {
+    return new Response('OK', { status: 200 });
   }
 
-  const { error: creditError } = await supabase.rpc('credit_purchase', {
-    uid: userId,
-    add_clicks: addClicks,
-    unlimited_hours: unlimitedHours,
-    set_golden: golden,
-    set_diamond: diamond,
-    set_badge: badge,
-    new_egg_name: eggName,
-  });
+  let eggName: string | null = null;
+  if (wantsEggName) {
+    if (userId) {
+      const { data: userRow } = await supabase
+        .from('users')
+        .select('display_name')
+        .eq('id', userId)
+        .maybeSingle();
+      eggName = userRow?.display_name ?? 'Anonymous Cracker';
+    } else {
+      // Guests have no account name to fall back on — the client collects
+      // one up front and sends it through as customData.eggName
+      eggName = (customData.eggName ?? '').toString().trim().slice(0, 40) || 'Anonymous Cracker';
+    }
+  }
+
+  const { error: creditError } = userId
+    ? await supabase.rpc('credit_purchase', {
+        uid: userId,
+        add_clicks: addClicks,
+        unlimited_hours: unlimitedHours,
+        set_golden: golden,
+        set_diamond: diamond,
+        set_badge: badge,
+        new_egg_name: eggName,
+      })
+    : await supabase.rpc('credit_guest_purchase', {
+        gid: anonId,
+        add_clicks: addClicks,
+        unlimited_hours: unlimitedHours,
+        set_golden: golden,
+        set_diamond: diamond,
+        set_badge: badge,
+        new_egg_name: eggName,
+      });
 
   if (creditError) {
     // Non-200 makes Paddle retry; the purchases upsert dedupes the retry, so
     // delete our marker row first to let the retry re-credit
-    console.error('credit_purchase failed:', creditError.message);
+    console.error('credit failed:', creditError.message);
     await supabase.from('purchases').delete().eq('transaction_id', transactionId);
     return new Response('Credit failed', { status: 500 });
   }
